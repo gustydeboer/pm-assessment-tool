@@ -1,187 +1,222 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Avaliações PM</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f7f9fc;
-        }
-        .container {
-            background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: 600;
-        }
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-        .btn {
-            padding: 8px 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn:hover {
-            background-color: #2980b9;
-        }
-        .btn-danger {
-            background-color: #e74c3c;
-        }
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
-        .login-form {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Avaliações PM</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f7f9fc;
+    }
+    .container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #e91e63;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: 600;
+    }
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    .btn {
+      padding: 8px 12px;
+      background-color: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background-color: #c2185b;
+    }
+    .btn-danger {
+      background-color: #e74c3c;
+    }
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+    .login-form {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div id="login-screen" class="login-form">
-            <h1>Acesso ao Painel Admin</h1>
-            
-            <div class="input-group">
-                <label for="admin-password">Senha de Admin</label>
-                <input type="password" id="admin-password" placeholder="Digite a senha de admin">
-            </div>
-            
-            <button id="login-btn" class="btn">Acessar</button>
-        </div>
-        
-        <div id="admin-panel" class="hidden">
-            <h1>Painel Admin - Avaliações de Product Manager</h1>
-            
-            <table id="assessments-table">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Email</th>
-                        <th>Data</th>
-                        <th>Média Geral</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Dados serão inseridos aqui -->
-                </tbody>
-            </table>
-        </div>
+  <div class="container">
+    <div id="login-screen" class="login-form">
+      <h1>Acesso ao Painel Admin</h1>
+      <div class="input-group">
+        <label for="admin-password">Senha de Admin</label>
+        <input type="password" id="admin-password" placeholder="Digite a senha de admin">
+      </div>
+      <button id="login-btn" class="btn">Acessar</button>
     </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBuPNqRUfnMBeA8PhqsXpbYdW9MRskzyAw",
-            authDomain: "pm-assessment-tool.firebaseapp.com",
-            projectId: "pm-assessment-tool",
-            storageBucket: "pm-assessment-tool.firebasestorage.app",
-            messagingSenderId: "940100178848",
-            appId: "1:940100178848:web:547bdef241a0d587cb8ac5"
-        };
+    <div id="admin-panel" class="hidden">
+      <h1>Painel Admin - Avaliações de Product Manager</h1>
+      <button class="btn" onclick="exportToCSV()">Exportar para CSV</button>
+      <table id="assessments-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>WhatsApp</th>
+            <th>Função</th>
+            <th>Data</th>
+            <th>Média Geral</th>
+            <th>Notas por Habilidade</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuPNqRUfnMBeA8PhqsXpbYdW9MRskzyAw",
+      authDomain: "pm-assessment-tool.firebaseapp.com",
+      projectId: "pm-assessment-tool",
+      storageBucket: "pm-assessment-tool.firebasestorage.app",
+      messagingSenderId: "940100178848",
+      appId: "1:940100178848:web:547bdef241a0d587cb8ac5"
+    };
 
-        const ADMIN_PASSWORD = "senhasecreta123";
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-        const loginScreen = document.getElementById('login-screen');
-        const adminPanel = document.getElementById('admin-panel');
-        const passwordInput = document.getElementById('admin-password');
-        const loginButton = document.getElementById('login-btn');
-        const assessmentsTable = document.getElementById('assessments-table').getElementsByTagName('tbody')[0];
+    const ADMIN_PASSWORD = "senhasecreta123";
+    const loginScreen = document.getElementById('login-screen');
+    const adminPanel = document.getElementById('admin-panel');
+    const passwordInput = document.getElementById('admin-password');
+    const loginButton = document.getElementById('login-btn');
+    const assessmentsTable = document.getElementById('assessments-table').getElementsByTagName('tbody')[0];
+    let allAssessments = [];
 
-        loginButton.addEventListener('click', authenticate);
+    loginButton.addEventListener('click', authenticate);
 
-        function authenticate() {
-            const input = passwordInput.value;
-            if (input === ADMIN_PASSWORD) {
-                loginScreen.classList.add('hidden');
-                adminPanel.classList.remove('hidden');
-                loadAssessments();
-            } else {
-                alert('Senha incorreta.');
-            }
-        }
+    function authenticate() {
+      const input = passwordInput.value;
+      if (input === ADMIN_PASSWORD) {
+        loginScreen.classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+        loadAssessments();
+      } else {
+        alert('Senha incorreta.');
+      }
+    }
 
-        function loadAssessments() {
-            db.collection("assessments").orderBy("timestamp", "desc").get().then(snapshot => {
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const user = data.user || {};
-                    const date = data.timestamp?.toDate().toLocaleString() || '---';
-                    const scores = Object.values(data.result || {});
-                    const avg = scores.length ? (scores.reduce((a, b) => a + parseFloat(b), 0) / scores.length).toFixed(1) : '-';
+    function loadAssessments() {
+      db.collection("assessments").orderBy("timestamp", "desc").get().then(snapshot => {
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const user = data.user || {};
+          const date = data.timestamp?.toDate().toLocaleString() || '---';
+          const scores = Object.values(data.result || {});
+          const avg = scores.length ? (scores.reduce((a, b) => a + parseFloat(b), 0) / scores.length).toFixed(1) : '-';
 
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${user.name || '-'}</td>
-                        <td>${user.email || '-'}</td>
-                        <td>${date}</td>
-                        <td>${avg}</td>
-                        <td><button class="btn btn-danger" onclick="deleteAssessment('${doc.id}', this)">Excluir</button></td>
-                    `;
-                    assessmentsTable.appendChild(tr);
-                });
-            });
-        }
+          const habilidades = Object.entries(data.result || {}).map(([skill, nota]) => `${skill}: ${nota}`).join('\n');
 
-        function deleteAssessment(docId, btn) {
-            if (confirm("Tem certeza que deseja excluir esta avaliação?")) {
-                db.collection("assessments").doc(docId).delete().then(() => {
-                    const row = btn.closest('tr');
-                    row.remove();
-                });
-            }
-        }
-    </script>
+          allAssessments.push({
+            nome: user.name || '-',
+            email: user.email || '-',
+            whatsapp: user.whatsapp || '-',
+            funcao: user.role || '-',
+            data: date,
+            media_geral: avg,
+            ...data.result
+          });
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${user.name || '-'}</td>
+            <td>${user.email || '-'}</td>
+            <td>${user.whatsapp || '-'}</td>
+            <td>${user.role || '-'}</td>
+            <td>${date}</td>
+            <td>${avg}</td>
+            <td>${habilidades.replace(/\n/g, '<br>')}</td>
+            <td><button class="btn btn-danger" onclick="deleteAssessment('${doc.id}', this)">Excluir</button></td>
+          `;
+          assessmentsTable.appendChild(tr);
+        });
+      });
+    }
+
+    function deleteAssessment(docId, btn) {
+      if (confirm("Tem certeza que deseja excluir esta avaliação?")) {
+        db.collection("assessments").doc(docId).delete().then(() => {
+          const row = btn.closest('tr');
+          row.remove();
+        });
+      }
+    }
+
+    function exportToCSV() {
+      if (allAssessments.length === 0) return alert('Nenhum dado para exportar.');
+
+      const replacer = (key, value) => value === null ? '' : value;
+      const header = Object.keys(allAssessments[0]);
+      const csv = [
+        header.join(','),
+        ...allAssessments.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+      ].join('\r\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'avaliacoes_pm.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
 </body>
 </html>
