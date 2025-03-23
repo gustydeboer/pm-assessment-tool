@@ -286,7 +286,7 @@
     const whatsapp = document.getElementById("user-whatsapp").value.trim();
     let role = document.getElementById("user-role").value;
     const otherRole = document.getElementById("other-role").value.trim();
-    if (!name || !role || !email) {return alert("Preencha nome, cargo atual e email.");
+    if (!name || !role || !email) {return alert("Preencha nome, cargo atual e email.")};
     if (role === "Outro" && otherRole) role = otherRole;
 
     userInfo = { name, email, whatsapp, role };
