@@ -171,30 +171,106 @@
   const db = firebase.firestore();
 
   const sections = [
-    {
-      skill: "Estratégia e Negócio",
-      description: "Entendimento do contexto de negócio, mercado e estratégia corporativa",
-      questions: [
-        "Conheço a estratégia da empresa",
-        "Estão claros os objetivos de médio e curto prazo",
-        "Eu entendo como a empresa ganha dinheiro",
-        "Conheço os concorrentes e substitutos",
-        "Estou atento às mudanças de mercado e tecnologia"
-      ]
-    },
-    {
-      skill: "Visão do Produto",
-      description: "Clareza de visão do Produto, definição de sucesso e alinhamento estratégico",
-      questions: [
-        "Tenho uma visão clara para o produto",
-        "Tenho um PITCH pronto",
-        "Conheço as alavancas de receita do produto",
-        "Tenho clareza do que é sucesso para o produto",
-        "O produto está alinhado com a estratégia da empresa"
-      ]
-    },
-    // [... adicione as demais 7 habilidades aqui como acima ...]
-  ];
+  {
+    skill: "Estratégia e Negócio",
+    description: "Entendimento do contexto de negócio, mercado e estratégia corporativa",
+    questions: [
+      "Conheço a estratégia da empresa",
+      "Estão claros os objetivos de médio e curto prazo",
+      "Eu entendo como a empresa ganha dinheiro",
+      "Conheço os concorrentes e substitutos",
+      "Estou atento às mudanças de mercado e tecnologia"
+    ]
+  },
+  {
+    skill: "Visão do Produto",
+    description: "Clareza de visão do Produto, definição de sucesso e alinhamento estratégico",
+    questions: [
+      "Tenho uma visão clara para o produto",
+      "Tenho um PITCH pronto",
+      "Conheço as alavancas de receita do produto",
+      "Tenho clareza do que é sucesso para o produto",
+      "O produto está alinhado com a estratégia da empresa"
+    ]
+  },
+  {
+    skill: "Discovery",
+    description: "Conhecimento das personas, validação de ideias e testes antes do desenvolvimento",
+    questions: [
+      "Tenho clareza de quem são as personas do produto",
+      "Conheço as jornadas dos usuários",
+      "Sempre desenhamos protótipos de features / produtos",
+      "As features são testadas antes de ir para o delivery",
+      "Já matamos features / ideias na fase de discovery"
+    ]
+  },
+  {
+    skill: "Delivery",
+    description: "Execução, clareza de entregas e alinhamento com o time e stakeholders",
+    questions: [
+      "Tenho clareza do MVP ou da feature a ser desenvolvido",
+      "Todos do time entendem e estão comprometidos com a entrega",
+      "O time tem clareza de como as atividades estão conectadas com a estratégia",
+      "Fazemos refinamento constantemente",
+      "Damos clareza para os stakeholders das estimativas de entrega"
+    ]
+  },
+  {
+    skill: "Go to Market",
+    description: "Planejamento e execução da entrada no mercado com alinhamento entre áreas",
+    questions: [
+      "Temos uma estratégia clara e validada de entrada no mercado",
+      "Todos as áreas, do comercial ao atendimento estão treinados",
+      "O modelo de vendas para o mercado está definido (SLG, MLG, PLG)",
+      "Testamos as estratégias e modelo de vendas antes de lançar o produto",
+      "Fazemos uma reunião de alinhamento interno amplo antes de ir para o mercado"
+    ]
+  },
+  {
+    skill: "Medir e Avaliar",
+    description: "Uso de dados, indicadores e metas para acompanhar a performance do produto",
+    questions: [
+      "Temos dados organizados e disponíveis para análises do time de produtos",
+      "Temos clareza dos indicadores estratégicos",
+      "Criamos uma árvore de indicadores de input e output",
+      "Temos clareza de indicadores de adequação, saúde, melhoria e vaidade",
+      "Temos metas claras e realizamos projeções"
+    ]
+  },
+  {
+    skill: "Decidir",
+    description: "Capacidade de tomar decisões, ajustar rotas e assumir responsabilidades",
+    questions: [
+      "Tenho autonomia para decidir sobre o produto",
+      "Aplico o PDCA constantemente em meu dia-a-dia",
+      "Não postergo decisões por medo ou falta de informação",
+      "Consigo mudar rotas quando vejo que estamos desviando dos objetivos",
+      "Tomo as melhores decisões possíveis, alinho e assumo as responsabilidades"
+    ]
+  },
+  {
+    skill: "Growth",
+    description: "Foco no crescimento do produto com base em dados, ciclo de vida e oportunidades",
+    questions: [
+      "Conheço o estágio do ciclo de vida do meu produto",
+      "Aplico estratégias de crescimento de acordo com o estágio do produto/ feature",
+      "Utilizo dados de usuários e analytics para basear as decisões",
+      "Trago insights para a evolução do produto, negócio e experiência do usuário",
+      "Tenho objetivos claros de crescimento"
+    ]
+  },
+  {
+    skill: "Liderança e Comportamento",
+    description: "Ações e atitudes que promovem cultura de equipe, proximidade com o usuário e aprendizado contínuo",
+    questions: [
+      "Fomento uma cultura de colaboração e comunicação aberta",
+      "Nunca perdemos de vista o cliente / usuário",
+      "Trabalho com ferramentas de gestão à vista",
+      "Testo o produto, acompanho usuários em testes e situações reais de uso",
+      "Vou com frequência a eventos, almoços e conversas com fornecedores"
+    ]
+  }
+];
 
   let userInfo = {};
   let currentSection = 0;
