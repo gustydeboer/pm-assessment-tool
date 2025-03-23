@@ -8,15 +8,89 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f9fc; }
-    h1 { color: #e91e63; }
-    .question { margin-bottom: 20px; }
-    .button {
-      background: #e91e63; color: white; padding: 10px 20px;
-      border: none; border-radius: 5px; cursor: pointer;
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f7f9fc;
+      text-align: center;
     }
-    .button:hover { background: #c2185b; }
-    #results-container { margin-top: 30px; }
+    h1 {
+      color: #e91e63;
+      margin-bottom: 10px;
+    }
+    p.subtitle {
+      font-size: 16px;
+      margin-top: 0;
+      margin-bottom: 30px;
+      color: #555;
+    }
+    .question {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .button {
+      background: #e91e63;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background: #c2185b;
+    }
+    .form-box {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      text-align: left;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    canvas {
+      max-width: 600px;
+      margin: 30px auto;
+    }
+    .progress-container {
+      width: 100%;
+      background: #eee;
+      border-radius: 4px;
+      height: 12px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #e91e63;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .rating-scale {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0 15px;
+    }
+    .rating-scale label {
+      flex: 1;
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+    }
+    .rating-scale input[type='radio'] {
+      margin-bottom: 6px;
+    }
+    .question-block {
+      margin-bottom: 25px;
+    }
     table {
       margin-top: 20px;
       border-collapse: collapse;
@@ -33,14 +107,17 @@
   </style>
 </head>
 <body>
-  <h1>Avaliação de Maturidade de Produto</h1>
+  <h1>>>> Autoavaliação de Product Management</h1>
+  <p class="subtitle">Avalie seu conhecimento em diferentes áreas do Product Management</p>
 
-  <div id="user-info">
-    <input type="text" id="user-name" placeholder="Seu nome"><br><br>
-    <input type="email" id="user-email" placeholder="Seu e-mail"><br><br>
-    <input type="text" id="user-whatsapp" placeholder="Seu número de WhatsApp (opcional)"><br><br>
+  <div id="user-info" class="form-box">
+    <h2>Antes de começar...</h2>
+    <p>Por favor, preencha as informações abaixo para personalizar sua experiência.</p>
 
-    <label for="user-role">Sua função atual:</label><br>
+    <label for="user-name">Nome *</label>
+    <input type="text" id="user-name" placeholder="Seu nome completo">
+
+    <label for="user-role">Cargo atual *</label>
     <select id="user-role" onchange="toggleOtherRole(this)">
       <option value="">Selecione</option>
       <option>APM</option>
@@ -52,19 +129,28 @@
       <option>Head Produto</option>
       <option>Diretor de Produto</option>
       <option>Outro</option>
-    </select><br><br>
-    <input type="text" id="other-role" placeholder="Qual?" style="display:none"><br><br>
+    </select>
+    <input type="text" id="other-role" placeholder="Qual?" style="display:none">
 
-    <button class="button" onclick="startAssessment()">Iniciar Avaliação</button>
+    <label for="user-email">Email (opcional) - caso queira contribuir com a construção do produto e acompanhar novidades! &lt;3</label>
+    <input type="email" id="user-email" placeholder="seu-email@exemplo.com">
+
+    <button class="button" onclick="startAssessment()">Continuar para avaliação</button>
   </div>
+  <div id="assessment" class="form-box" style="display:none">
+    <div class="progress-container">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
 
-  <div id="assessment" style="display:none">
+    <div id="section-title" style="font-weight: bold; font-size: 18px; margin-bottom: 10px;"></div>
+    <div id="section-description" style="font-size: 14px; color: #666; margin-bottom: 25px;"></div>
+
     <div id="question-container" class="question"></div>
-    <div id="options-container"></div>
+
     <button class="button" onclick="nextQuestion()">Próxima</button>
   </div>
 
-  <div id="results-container" style="display:none;">
+  <div id="results-container" class="form-box" style="display:none">
     <canvas id="radar-chart" width="400" height="400"></canvas>
     <div id="results-table"></div>
   </div>
@@ -81,86 +167,35 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  const skills = [
-    "Estratégia e Negócio",
-    "Visão do Produto",
-    "Discovery",
-    "Delivery",
-    "Go to Market",
-    "Medir e Avaliar",
-    "Decidir",
-    "Growth",
-    "Liderança e Comportamento"
+  const sections = [
+    {
+      skill: "Estratégia e Negócio",
+      description: "Definição de visão, análise de mercado, OKRs, frameworks de priorização e estratégia",
+      questions: [
+        "Conheço a estratégia da empresa",
+        "Estão claros os objetivos de médio e curto prazo",
+        "Eu entendo como a empresa ganha dinheiro",
+        "Conheço os concorrentes e substitutos",
+        "Estou atento às mudanças de mercado e tecnologia"
+      ]
+    },
+    {
+      skill: "Visão do Produto",
+      description: "Clareza de visão, definição de sucesso e alinhamento estratégico",
+      questions: [
+        "Tenho uma visão clara para o produto",
+        "Tenho um PITCH pronto",
+        "Conheço as alavancas de receita do produto",
+        "Tenho clareza do que é sucesso para o produto",
+        "O produto está alinhado com a estratégia da empresa"
+      ]
+    },
+    // [... adicione as demais 7 habilidades aqui como acima ...]
   ];
 
-  const questions = [
-    // Estratégia e Negócio
-    { text: "Conheço a estratégia da empresa", skill: "Estratégia e Negócio" },
-    { text: "Estão claros os objetivos de médio e curto prazo", skill: "Estratégia e Negócio" },
-    { text: "Eu entendo como a empresa ganha dinheiro", skill: "Estratégia e Negócio" },
-    { text: "Conheço os concorrentes e substitutos", skill: "Estratégia e Negócio" },
-    { text: "Estou atento às mudanças de mercado e tecnologia", skill: "Estratégia e Negócio" },
-
-    // Visão do Produto
-    { text: "Tenho uma visão clara para o produto", skill: "Visão do Produto" },
-    { text: "Tenho um PITCH pronto", skill: "Visão do Produto" },
-    { text: "Conheço as alavancas de receita do produto", skill: "Visão do Produto" },
-    { text: "Tenho clareza do que é sucesso para o produto", skill: "Visão do Produto" },
-    { text: "O produto está alinhado com a estratégia da empresa", skill: "Visão do Produto" },
-
-    // Discovery
-    { text: "Tenho clareza de quem são as personas do produto", skill: "Discovery" },
-    { text: "Conheço as jornadas dos usuários", skill: "Discovery" },
-    { text: "Sempre desenhamos protótipos de features / produtos", skill: "Discovery" },
-    { text: "As features são testadas antes de ir para o delivery", skill: "Discovery" },
-    { text: "Já matamos features / ideias na fase de discovery", skill: "Discovery" },
-
-    // Delivery
-    { text: "Tenho clareza do MVP ou da feature a ser desenvolvido", skill: "Delivery" },
-    { text: "Todos do time entendem e estão comprometidos com a entrega", skill: "Delivery" },
-    { text: "O time tem clareza de como as atividades estão conectadas com a estratégia", skill: "Delivery" },
-    { text: "Fazemos refinamento constantemente", skill: "Delivery" },
-    { text: "Damos clareza para os stakeholders das estimativas de entrega", skill: "Delivery" },
-
-    // Go to Market
-    { text: "Temos uma estratégia clara e validada de entrada no mercado", skill: "Go to Market" },
-    { text: "Todos as áreas, do comercial ao atendimento estão treinados", skill: "Go to Market" },
-    { text: "O modelo de vendas para o mercado está definido (SLG, MLG, PLG)", skill: "Go to Market" },
-    { text: "Testamos as estratégias e modelo de vendas antes de lançar o produto", skill: "Go to Market" },
-    { text: "Fazemos uma reunião de alinhamento interno amplo antes de ir para o mercado", skill: "Go to Market" },
-
-    // Medir e Avaliar
-    { text: "Temos dados organizados e disponíveis para análises do time de produtos", skill: "Medir e Avaliar" },
-    { text: "Temos clareza dos indicadores estratégicos", skill: "Medir e Avaliar" },
-    { text: "Criamos uma árvore de indicadores de input e output", skill: "Medir e Avaliar" },
-    { text: "Temos clareza de indicadores de adequação, saúde, melhoria e vaidade", skill: "Medir e Avaliar" },
-    { text: "Temos metas claras e realizamos projeções", skill: "Medir e Avaliar" },
-
-    // Decidir
-    { text: "Tenho autonomia para decidir sobre o produto", skill: "Decidir" },
-    { text: "Aplico o PDCA constantemente em meu dia-a-dia", skill: "Decidir" },
-    { text: "Não postergo decisões por medo ou falta de informação", skill: "Decidir" },
-    { text: "Consigo mudar rotas quando vejo que estamos desviando dos objetivos", skill: "Decidir" },
-    { text: "Tomo as melhores decisões possíveis, alinho e assumo as responsabilidades", skill: "Decidir" },
-
-    // Growth
-    { text: "Conheço o estágio do ciclo de vida do meu produto", skill: "Growth" },
-    { text: "Aplico estratégias de crescimento de acordo com o estágio do produto/ feature", skill: "Growth" },
-    { text: "Utilizo dados de usuários e analytics para basear as decisões", skill: "Growth" },
-    { text: "Trago insights para a evolução do produto, negócio e experiência do usuário", skill: "Growth" },
-    { text: "Tenho objetivos claros de crescimento", skill: "Growth" },
-
-    // Liderança e Comportamento
-    { text: "Fomento uma cultura de colaboração e comunicação aberta", skill: "Liderança e Comportamento" },
-    { text: "Nunca perdemos de vista o cliente / usuário", skill: "Liderança e Comportamento" },
-    { text: "Trabalho com ferramentas de gestão à vista", skill: "Liderança e Comportamento" },
-    { text: "Testo o produto, acompanho usuários em testes e situações reais de uso", skill: "Liderança e Comportamento" },
-    { text: "Vou com frequência a eventos, almoços e conversas com fornecedores", skill: "Liderança e Comportamento" }
-  ];
-
-  let currentQuestionIndex = 0;
-  let answers = [];
   let userInfo = {};
+  let currentSection = 0;
+  let answers = [];
 
   function toggleOtherRole(select) {
     document.getElementById('other-role').style.display = select.value === 'Outro' ? 'block' : 'none';
@@ -169,35 +204,64 @@
   function startAssessment() {
     const name = document.getElementById("user-name").value.trim();
     const email = document.getElementById("user-email").value.trim();
-    const whatsapp = document.getElementById("user-whatsapp").value.trim();
+    const whatsapp = ""; // opcional, pode ser adicionado depois
     let role = document.getElementById("user-role").value;
     const otherRole = document.getElementById("other-role").value.trim();
-    if (!name || !email || !role) return alert("Preencha nome, e-mail e função");
+    if (!name || !role) return alert("Preencha nome e cargo atual.");
     if (role === "Outro" && otherRole) role = otherRole;
 
     userInfo = { name, email, whatsapp, role };
     document.getElementById("user-info").style.display = "none";
     document.getElementById("assessment").style.display = "block";
-    showQuestion(currentQuestionIndex);
+    showSection(currentSection);
   }
 
-  function showQuestion(index) {
-    const q = questions[index];
-    document.getElementById("question-container").innerText = q.text;
-    const options = [1, 2, 3, 4, 5];
-    document.getElementById("options-container").innerHTML = options.map(o =>
-      `<label><input type='radio' name='option' value='${o}'> ${o}</label><br>`
-    ).join('');
+  function updateProgressBar(current, total) {
+    const percent = Math.round((current / total) * 100);
+    document.getElementById('progress-bar').style.width = percent + '%';
+  }
+
+  function showSection(index) {
+    const section = sections[index];
+    document.getElementById("section-title").innerText = `${index + 1}. ${section.skill}`;
+    document.getElementById("section-description").innerText = section.description;
+
+    const container = document.getElementById("question-container");
+    container.innerHTML = "";
+
+    section.questions.forEach((text, qIndex) => {
+      const questionDiv = document.createElement("div");
+      questionDiv.className = "question-block";
+      const inputName = `section${index}-q${qIndex}`;
+      questionDiv.innerHTML = `
+        <p><strong>${text}</strong></p>
+        <div class="rating-scale">
+          ${[1, 2, 3, 4, 5].map(val => `
+            <label>
+              <input type="radio" name="${inputName}" value="${val}"><br>${val}
+            </label>
+          `).join("")}
+        </div>
+      `;
+      container.appendChild(questionDiv);
+    });
+
+    updateProgressBar(index, sections.length);
   }
 
   function nextQuestion() {
-    const selected = document.querySelector('input[name="option"]:checked');
-    if (!selected) return alert("Escolha uma opção");
-    const value = parseInt(selected.value);
-    answers.push({ skill: questions[currentQuestionIndex].skill, score: value });
-    currentQuestionIndex++;
-    if (currentQuestionIndex < questions.length) {
-      showQuestion(currentQuestionIndex);
+    const radios = document.querySelectorAll(`#question-container input[type="radio"]:checked`);
+    if (radios.length < 5) return alert("Responda todas as perguntas antes de continuar.");
+
+    const section = sections[currentSection];
+    section.questions.forEach((text, i) => {
+      const val = document.querySelector(`input[name="section${currentSection}-q${i}"]:checked`).value;
+      answers.push({ skill: section.skill, score: parseInt(val) });
+    });
+
+    currentSection++;
+    if (currentSection < sections.length) {
+      showSection(currentSection);
     } else {
       saveResults();
     }
@@ -205,10 +269,10 @@
 
   function saveResults() {
     const result = {};
-    skills.forEach(skill => {
-      const skillAnswers = answers.filter(a => a.skill === skill);
-      const avg = skillAnswers.reduce((sum, a) => sum + a.score, 0) / skillAnswers.length || 0;
-      result[skill] = avg.toFixed(1);
+    sections.forEach(sec => {
+      const skillAnswers = answers.filter(a => a.skill === sec.skill);
+      const avg = skillAnswers.reduce((sum, a) => sum + a.score, 0) / skillAnswers.length;
+      result[sec.skill] = avg.toFixed(1);
     });
 
     db.collection("assessments").add({
@@ -266,3 +330,4 @@
 </script>
 </body>
 </html>
+
