@@ -107,17 +107,17 @@
   </style>
 </head>
 <body>
-  <h1>>>> Autoavaliação de Product Management</h1>
-  <p class="subtitle">Avalie seu conhecimento em diferentes áreas do Product Management</p>
+  <h1>>>> Teste The Pink Guide of Product</h1>
+  <p class="subtitle">Realize sua autoavaliação e descubra o nível de maturidade em cada uma das 9 habilidades como Product Management</p>
 
   <div id="user-info" class="form-box">
-    <h2>Antes de começar...</h2>
-    <p>Por favor, preencha as informações abaixo para personalizar sua experiência.</p>
+    <h2>Antes de iniciar o teste, vamos conhecer um pouco você!</h2>
+    <p>Preencha as informações abaixo para que possa receber o seu teste completo e atualizações do nosso guia.</p>
 
     <label for="user-name">Nome *</label>
-    <input type="text" id="user-name" placeholder="Seu nome completo">
+    <input type="text" id="user-name" placeholder="Como gosta de ser chamada(o)">
 
-    <label for="user-role">Cargo atual *</label>
+    <label for="user-role">Cargo e/ou função atual *</label>
     <select id="user-role" onchange="toggleOtherRole(this)">
       <option value="">Selecione</option>
       <option>APM</option>
@@ -132,7 +132,10 @@
     </select>
     <input type="text" id="other-role" placeholder="Qual?" style="display:none">
 
-    <label for="user-email">Email (opcional) - caso queira contribuir com a construção do produto e acompanhar novidades! &lt;3</label>
+    <label for="user-whatsapp">WhatsApp (opcional) - facilita a comunicação e atualização dos seus resultados e recomendaçôes. &lt;3</label>
+    <input type="text" id="user-whatsapp" placeholder="(11) 9XXXX-XXXX">
+
+<label for="user-email">Email</label>
     <input type="email" id="user-email" placeholder="seu-email@exemplo.com">
 
     <button class="button" onclick="startAssessment()">Continuar para avaliação</button>
@@ -204,7 +207,7 @@
   function startAssessment() {
     const name = document.getElementById("user-name").value.trim();
     const email = document.getElementById("user-email").value.trim();
-    const whatsapp = ""; // opcional, pode ser adicionado depois
+    const whatsapp = document.getElementById("user-whatsapp").value.trim();
     let role = document.getElementById("user-role").value;
     const otherRole = document.getElementById("other-role").value.trim();
     if (!name || !role) return alert("Preencha nome e cargo atual.");
@@ -329,5 +332,9 @@
   }
 </script>
 </body>
-</html>
 
+<footer>
+        <p>&copy; 2025 - todos os direitos reservados para The Pink Guide of Product</p>
+    </footer>
+
+</html>
