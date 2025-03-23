@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Avaliação de Maturidade de Produto</title>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #f7f9fc; }
-    h1 { color: #e91e63; } /* Pink principal */
+    h1 { color: #e91e63; }
     .question { margin-bottom: 20px; }
     .button {
       background: #e91e63; color: white; padding: 10px 20px;
@@ -16,6 +17,19 @@
     }
     .button:hover { background: #c2185b; }
     #results-container { margin-top: 30px; }
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
   </style>
 </head>
 <body>
@@ -50,101 +64,205 @@
     <button class="button" onclick="nextQuestion()">Próxima</button>
   </div>
 
-  <div id="results-container"></div>
+  <div id="results-container" style="display:none;">
+    <canvas id="radar-chart" width="400" height="400"></canvas>
+    <div id="results-table"></div>
+  </div>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBuPNqRUfnMBeA8PhqsXpbYdW9MRskzyAw",
+    authDomain: "pm-assessment-tool.firebaseapp.com",
+    projectId: "pm-assessment-tool",
+    storageBucket: "pm-assessment-tool.firebasestorage.app",
+    messagingSenderId: "940100178848",
+    appId: "1:940100178848:web:547bdef241a0d587cb8ac5"
+  };
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBuPNqRUfnMBeA8PhqsXpbYdW9MRskzyAw",
-      authDomain: "pm-assessment-tool.firebaseapp.com",
-      projectId: "pm-assessment-tool",
-      storageBucket: "pm-assessment-tool.firebasestorage.app",
-      messagingSenderId: "940100178848",
-      appId: "1:940100178848:web:547bdef241a0d587cb8ac5"
-    };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+  const skills = [
+    "Estratégia e Negócio",
+    "Visão do Produto",
+    "Discovery",
+    "Delivery",
+    "Go to Market",
+    "Medir e Avaliar",
+    "Decidir",
+    "Growth",
+    "Liderança e Comportamento"
+  ];
 
-    const skills = [
-      "Visão de Produto", "Gestão de Stakeholders", "Pesquisa de Usuário",
-      "Métricas", "Design", "Tech", "Prioridades", "Liderança", "Execução"
-    ];
+  const questions = [
+    // Estratégia e Negócio
+    { text: "Conheço a estratégia da empresa", skill: "Estratégia e Negócio" },
+    { text: "Estão claros os objetivos de médio e curto prazo", skill: "Estratégia e Negócio" },
+    { text: "Eu entendo como a empresa ganha dinheiro", skill: "Estratégia e Negócio" },
+    { text: "Conheço os concorrentes e substitutos", skill: "Estratégia e Negócio" },
+    { text: "Estou atento às mudanças de mercado e tecnologia", skill: "Estratégia e Negócio" },
 
-    const questions = [
-      { text: "Minha equipe tem uma visão clara do produto.", skill: "Visão de Produto" },
-      { text: "Me comunico bem com stakeholders.", skill: "Gestão de Stakeholders" },
-      { text: "Realizo pesquisas com usuários frequentemente.", skill: "Pesquisa de Usuário" },
-      // Adicione suas perguntas reais aqui
-    ];
+    // Visão do Produto
+    { text: "Tenho uma visão clara para o produto", skill: "Visão do Produto" },
+    { text: "Tenho um PITCH pronto", skill: "Visão do Produto" },
+    { text: "Conheço as alavancas de receita do produto", skill: "Visão do Produto" },
+    { text: "Tenho clareza do que é sucesso para o produto", skill: "Visão do Produto" },
+    { text: "O produto está alinhado com a estratégia da empresa", skill: "Visão do Produto" },
 
-    let currentQuestionIndex = 0;
-    let answers = [];
-    let userInfo = {};
+    // Discovery
+    { text: "Tenho clareza de quem são as personas do produto", skill: "Discovery" },
+    { text: "Conheço as jornadas dos usuários", skill: "Discovery" },
+    { text: "Sempre desenhamos protótipos de features / produtos", skill: "Discovery" },
+    { text: "As features são testadas antes de ir para o delivery", skill: "Discovery" },
+    { text: "Já matamos features / ideias na fase de discovery", skill: "Discovery" },
 
-    function toggleOtherRole(select) {
-      document.getElementById('other-role').style.display = select.value === 'Outro' ? 'block' : 'none';
-    }
+    // Delivery
+    { text: "Tenho clareza do MVP ou da feature a ser desenvolvido", skill: "Delivery" },
+    { text: "Todos do time entendem e estão comprometidos com a entrega", skill: "Delivery" },
+    { text: "O time tem clareza de como as atividades estão conectadas com a estratégia", skill: "Delivery" },
+    { text: "Fazemos refinamento constantemente", skill: "Delivery" },
+    { text: "Damos clareza para os stakeholders das estimativas de entrega", skill: "Delivery" },
 
-    function startAssessment() {
-      const name = document.getElementById("user-name").value.trim();
-      const email = document.getElementById("user-email").value.trim();
-      const whatsapp = document.getElementById("user-whatsapp").value.trim();
-      let role = document.getElementById("user-role").value;
-      const otherRole = document.getElementById("other-role").value.trim();
-      if (!name || !email || !role) return alert("Preencha nome, e-mail e função");
-      if (role === "Outro" && otherRole) role = otherRole;
+    // Go to Market
+    { text: "Temos uma estratégia clara e validada de entrada no mercado", skill: "Go to Market" },
+    { text: "Todos as áreas, do comercial ao atendimento estão treinados", skill: "Go to Market" },
+    { text: "O modelo de vendas para o mercado está definido (SLG, MLG, PLG)", skill: "Go to Market" },
+    { text: "Testamos as estratégias e modelo de vendas antes de lançar o produto", skill: "Go to Market" },
+    { text: "Fazemos uma reunião de alinhamento interno amplo antes de ir para o mercado", skill: "Go to Market" },
 
-      userInfo = { name, email, whatsapp, role };
-      document.getElementById("user-info").style.display = "none";
-      document.getElementById("assessment").style.display = "block";
+    // Medir e Avaliar
+    { text: "Temos dados organizados e disponíveis para análises do time de produtos", skill: "Medir e Avaliar" },
+    { text: "Temos clareza dos indicadores estratégicos", skill: "Medir e Avaliar" },
+    { text: "Criamos uma árvore de indicadores de input e output", skill: "Medir e Avaliar" },
+    { text: "Temos clareza de indicadores de adequação, saúde, melhoria e vaidade", skill: "Medir e Avaliar" },
+    { text: "Temos metas claras e realizamos projeções", skill: "Medir e Avaliar" },
+
+    // Decidir
+    { text: "Tenho autonomia para decidir sobre o produto", skill: "Decidir" },
+    { text: "Aplico o PDCA constantemente em meu dia-a-dia", skill: "Decidir" },
+    { text: "Não postergo decisões por medo ou falta de informação", skill: "Decidir" },
+    { text: "Consigo mudar rotas quando vejo que estamos desviando dos objetivos", skill: "Decidir" },
+    { text: "Tomo as melhores decisões possíveis, alinho e assumo as responsabilidades", skill: "Decidir" },
+
+    // Growth
+    { text: "Conheço o estágio do ciclo de vida do meu produto", skill: "Growth" },
+    { text: "Aplico estratégias de crescimento de acordo com o estágio do produto/ feature", skill: "Growth" },
+    { text: "Utilizo dados de usuários e analytics para basear as decisões", skill: "Growth" },
+    { text: "Trago insights para a evolução do produto, negócio e experiência do usuário", skill: "Growth" },
+    { text: "Tenho objetivos claros de crescimento", skill: "Growth" },
+
+    // Liderança e Comportamento
+    { text: "Fomento uma cultura de colaboração e comunicação aberta", skill: "Liderança e Comportamento" },
+    { text: "Nunca perdemos de vista o cliente / usuário", skill: "Liderança e Comportamento" },
+    { text: "Trabalho com ferramentas de gestão à vista", skill: "Liderança e Comportamento" },
+    { text: "Testo o produto, acompanho usuários em testes e situações reais de uso", skill: "Liderança e Comportamento" },
+    { text: "Vou com frequência a eventos, almoços e conversas com fornecedores", skill: "Liderança e Comportamento" }
+  ];
+
+  let currentQuestionIndex = 0;
+  let answers = [];
+  let userInfo = {};
+
+  function toggleOtherRole(select) {
+    document.getElementById('other-role').style.display = select.value === 'Outro' ? 'block' : 'none';
+  }
+
+  function startAssessment() {
+    const name = document.getElementById("user-name").value.trim();
+    const email = document.getElementById("user-email").value.trim();
+    const whatsapp = document.getElementById("user-whatsapp").value.trim();
+    let role = document.getElementById("user-role").value;
+    const otherRole = document.getElementById("other-role").value.trim();
+    if (!name || !email || !role) return alert("Preencha nome, e-mail e função");
+    if (role === "Outro" && otherRole) role = otherRole;
+
+    userInfo = { name, email, whatsapp, role };
+    document.getElementById("user-info").style.display = "none";
+    document.getElementById("assessment").style.display = "block";
+    showQuestion(currentQuestionIndex);
+  }
+
+  function showQuestion(index) {
+    const q = questions[index];
+    document.getElementById("question-container").innerText = q.text;
+    const options = [1, 2, 3, 4, 5];
+    document.getElementById("options-container").innerHTML = options.map(o =>
+      `<label><input type='radio' name='option' value='${o}'> ${o}</label><br>`
+    ).join('');
+  }
+
+  function nextQuestion() {
+    const selected = document.querySelector('input[name="option"]:checked');
+    if (!selected) return alert("Escolha uma opção");
+    const value = parseInt(selected.value);
+    answers.push({ skill: questions[currentQuestionIndex].skill, score: value });
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
       showQuestion(currentQuestionIndex);
+    } else {
+      saveResults();
     }
+  }
 
-    function showQuestion(index) {
-      const q = questions[index];
-      document.getElementById("question-container").innerText = q.text;
-      const options = [1, 2, 3, 4, 5];
-      document.getElementById("options-container").innerHTML = options.map(o =>
-        `<label><input type='radio' name='option' value='${o}'> ${o}</label><br>`
-      ).join('');
-    }
+  function saveResults() {
+    const result = {};
+    skills.forEach(skill => {
+      const skillAnswers = answers.filter(a => a.skill === skill);
+      const avg = skillAnswers.reduce((sum, a) => sum + a.score, 0) / skillAnswers.length || 0;
+      result[skill] = avg.toFixed(1);
+    });
 
-    function nextQuestion() {
-      const selected = document.querySelector('input[name="option"]:checked');
-      if (!selected) return alert("Escolha uma opção");
-      const value = parseInt(selected.value);
-      answers.push({ skill: questions[currentQuestionIndex].skill, score: value });
-      currentQuestionIndex++;
-      if (currentQuestionIndex < questions.length) {
-        showQuestion(currentQuestionIndex);
-      } else {
-        saveResults();
+    db.collection("assessments").add({
+      user: userInfo,
+      result,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      showResults(result);
+    });
+  }
+
+  function showResults(result) {
+    document.getElementById("assessment").style.display = "none";
+    document.getElementById("results-container").style.display = "block";
+
+    const labels = Object.keys(result);
+    const data = Object.values(result).map(v => parseFloat(v));
+
+    new Chart(document.getElementById("radar-chart"), {
+      type: 'radar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Maturidade por Habilidade',
+          data,
+          fill: true,
+          backgroundColor: 'rgba(233,30,99,0.2)',
+          borderColor: '#e91e63',
+          pointBackgroundColor: '#e91e63'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          r: {
+            min: 0,
+            max: 5,
+            ticks: { stepSize: 1 }
+          }
+        }
       }
-    }
+    });
 
-    function saveResults() {
-      const result = {};
-      skills.forEach(skill => {
-        const skillAnswers = answers.filter(a => a.skill === skill);
-        const avg = skillAnswers.reduce((sum, a) => sum + a.score, 0) / skillAnswers.length || 0;
-        result[skill] = avg.toFixed(1);
-      });
-
-      db.collection("assessments").add({
-        user: userInfo,
-        result,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => {
-        showResults(result);
-      });
-    }
-
-    function showResults(result) {
-      document.getElementById("assessment").style.display = "none";
-      const container = document.getElementById("results-container");
-      container.innerHTML = `<h2>Resultado da Avaliação</h2>` +
-        skills.map(skill => `<p><strong>${skill}:</strong> ${result[skill]}</p>`).join('');
-    }
-  </script>
+    const table = `
+      <h2>Notas por Habilidade</h2>
+      <table>
+        <thead><tr><th>Habilidade</th><th>Média</th></tr></thead>
+        <tbody>
+          ${labels.map((label, i) => `<tr><td>${label}</td><td>${data[i]}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    `;
+    document.getElementById("results-table").innerHTML = table;
+  }
+</script>
 </body>
 </html>
