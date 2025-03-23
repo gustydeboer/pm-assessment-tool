@@ -1,650 +1,150 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto-Avaliação de Product Manager</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-    <!-- Firebase App (a base) -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <!-- Firebase Firestore -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f7f9fc;
-        }
-        .container {
-            background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .question {
-            margin-bottom: 25px;
-            padding: 15px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-        }
-        .question-text {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #34495e;
-        }
-        .options {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-        .option {
-            margin: 5px;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .option:hover {
-            background-color: #e9f0f7;
-        }
-        .option.selected {
-            background-color: #3498db;
-            color: white;
-            border-color: #2980b9;
-        }
-        .progress-bar {
-            height: 8px;
-            background-color: #ecf0f1;
-            border-radius: 4px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-        .progress {
-            height: 100%;
-            background-color: #3498db;
-            width: 0%;
-            transition: width 0.3s;
-        }
-        .button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .button:hover {
-            background-color: #2980b9;
-        }
-        .button:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-        }
-        .results {
-            margin-top: 30px;
-        }
-        .chart-container {
-            margin: 0 auto;
-            max-width: 600px;
-            max-height: 600px;
-        }
-        .skill-score {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .skill-name {
-            font-weight: 600;
-        }
-        .skill-value {
-            background-color: #3498db;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-        }
-        .hidden {
-            display: none;
-        }
-        .input-group {
-            margin: 20px 0;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .notification {
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-            text-align: center;
-        }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        #result-link {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            text-align: center;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avaliação de Maturidade de Produto</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f9fc; }
+    h1 { color: #e91e63; } /* Pink principal */
+    .question { margin-bottom: 20px; }
+    .button {
+      background: #e91e63; color: white; padding: 10px 20px;
+      border: none; border-radius: 5px; cursor: pointer;
+    }
+    .button:hover { background: #c2185b; }
+    #results-container { margin-top: 30px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Auto-Avaliação de Product Manager</h1>
-        
-        <div id="start-screen">
-            <p>Bem-vindo à auto-avaliação de competências de Product Manager. Esta ferramenta irá avaliar suas habilidades em 9 áreas fundamentais da gestão de produtos.</p>
-            
-            <div class="input-group">
-                <label for="user-name">Nome</label>
-                <input type="text" id="user-name" placeholder="Seu nome">
-            </div>
-            
-            <div class="input-group">
-                <label for="user-email">Email</label>
-                <input type="email" id="user-email" placeholder="seu.email@exemplo.com">
-            </div>
-            
-            <button id="start-btn" class="button">Iniciar Avaliação</button>
-        </div>
-        
-        <div id="assessment-form" class="hidden">
-            <div class="progress-bar">
-                <div class="progress" id="progress-indicator"></div>
-            </div>
-            
-            <div id="question-container"></div>
-            
-            <button id="next-btn" class="button">Próxima</button>
-        </div>
-        
-        <div id="results-container" class="results hidden">
-            <h2>Seu Radar de Competências</h2>
-            <div id="notification" class="hidden notification"></div>
-            
-            <div class="chart-container">
-                <canvas id="radar-chart"></canvas>
-            </div>
-            
-            <div id="skill-scores" class="skill-scores">
-                <!-- Scores will be added here -->
-            </div>
-            
-            <div id="result-link" class="hidden">
-                <p>Link permanente para seus resultados:</p>
-                <a href="#" id="permalink"></a>
-            </div>
-            
-            <button id="save-results-btn" class="button" style="margin-top: 20px;">Salvar Resultados</button>
-            <button id="restart-btn" class="button" style="margin-top: 10px;">Nova Avaliação</button>
-        </div>
-    </div>
+  <h1>Avaliação de Maturidade de Produto</h1>
 
-    <script>
-        // Configuração do Firebase - SUBSTITUA COM SUAS CREDENCIAIS
-        const firebaseConfig = {
-            apiKey: "AIzaSyBuPNqRUfnMBeA8PhqsXpbYdW9MRskzyAw",
-            authDomain: "pm-assessment-tool.firebaseapp.com",
-            projectId: "pm-assessment-tool",
-            storageBucket: "pm-assessment-tool.firebasestorage.app",
-            messagingSenderId: "940100178848",
-            appId: "1:940100178848:web:547bdef241a0d587cb8ac5"
-        };
-        
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        
-        // Definição das habilidades e competências
-        const skills = [
-            "Descoberta e Validação", 
-            "Estratégia e Visão", 
-            "Priorização", 
-            "Entrega e Agilidade", 
-            "Comunicação", 
-            "Stakeholder Management", 
-            "Análise de Dados", 
-            "Liderança", 
-            "Conhecimento Técnico"
-        ];
-        
-        // Perguntas da avaliação (exemplo - substitua pelas suas perguntas do Google Forms)
-        const questions = [
-            {
-                text: "Como você aborda a descoberta de problemas dos usuários?",
-                options: [
-                    "Raramente realizo pesquisas estruturadas",
-                    "Faço pesquisas ocasionais com usuários",
-                    "Tenho um processo regular de entrevistas com usuários",
-                    "Uso uma metodologia rigorosa de descoberta continuamente",
-                    "Implementei práticas avançadas de descoberta com métricas"
-                ],
-                skill: "Descoberta e Validação"
-            },
-            {
-                text: "Como você define a visão do produto?",
-                options: [
-                    "Geralmente sigo o que é solicitado pelos stakeholders",
-                    "Tenho uma visão básica, mas com pouca validação",
-                    "Defino visão baseada em dados de mercado e usuários",
-                    "Crio visão estratégica alinhada aos objetivos do negócio",
-                    "Desenvolvo visão disruptiva com validação contínua"
-                ],
-                skill: "Estratégia e Visão"
-            },
-            // Adicione todas as outras perguntas do seu formulário aqui
-            // Certifique-se de que cada pergunta esteja mapeada para uma das 9 habilidades
-        ];
-        
-        // Estado da aplicação
-        let currentQuestionIndex = 0;
-        let answers = [];
-        let userName = "";
-        let userEmail = "";
-        let assessmentId = null;
-        let radarChart = null;
-        
-        // Elementos DOM
-        const startScreen = document.getElementById('start-screen');
-        const startButton = document.getElementById('start-btn');
-        const nameInput = document.getElementById('user-name');
-        const emailInput = document.getElementById('user-email');
-        const questionContainer = document.getElementById('question-container');
-        const nextButton = document.getElementById('next-btn');
-        const progressIndicator = document.getElementById('progress-indicator');
-        const assessmentForm = document.getElementById('assessment-form');
-        const resultsContainer = document.getElementById('results-container');
-        const restartButton = document.getElementById('restart-btn');
-        const saveResultsButton = document.getElementById('save-results-btn');
-        const notification = document.getElementById('notification');
-        const resultLink = document.getElementById('result-link');
-        const permalink = document.getElementById('permalink');
-        
-        // Event Listeners
-        startButton.addEventListener('click', startAssessment);
-        nextButton.addEventListener('click', processAnswer);
-        restartButton.addEventListener('click', resetAssessment);
-        saveResultsButton.addEventListener('click', saveResults);
-        
-        // Verificar se há um ID na URL para carregar resultados salvos
-        checkForSavedResults();
-        
-        // Iniciar avaliação
-        function startAssessment() {
-            userName = nameInput.value.trim();
-            userEmail = emailInput.value.trim();
-            
-            if (!userName || !userEmail) {
-                alert("Por favor, preencha seu nome e email para começar.");
-                return;
-            }
-            
-            startScreen.classList.add('hidden');
-            assessmentForm.classList.remove('hidden');
-            
-            currentQuestionIndex = 0;
-            answers = [];
-            showQuestion(currentQuestionIndex);
-            updateProgressBar();
-        }
-        
-        // Mostrar a pergunta atual
-        function showQuestion(index) {
-            const question = questions[index];
-            
-            questionContainer.innerHTML = `
-                <div class="question">
-                    <div class="question-text">${index + 1}. ${question.text}</div>
-                    <div class="options" id="options-container">
-                        ${question.options.map((option, i) => `
-                            <div class="option" data-index="${i}">${option}</div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-            
-            // Adicionar listeners para as opções
-            const options = document.querySelectorAll('.option');
-            options.forEach(option => {
-                option.addEventListener('click', function() {
-                    // Remover seleção anterior
-                    options.forEach(opt => opt.classList.remove('selected'));
-                    // Adicionar seleção atual
-                    this.classList.add('selected');
-                    // Habilitar botão de próxima
-                    nextButton.disabled = false;
-                });
-            });
-            
-            // Desabilitar botão até que uma opção seja selecionada
-            nextButton.disabled = true;
-            
-            // Atualizar texto do botão para última pergunta
-            if (index === questions.length - 1) {
-                nextButton.textContent = 'Ver Resultados';
-            } else {
-                nextButton.textContent = 'Próxima';
-            }
-        }
-        
-        // Atualizar a barra de progresso
-        function updateProgressBar() {
-            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-            progressIndicator.style.width = `${progress}%`;
-        }
-        
-        // Processar resposta e avançar
-        function processAnswer() {
-            const selectedOption = document.querySelector('.option.selected');
-            if (!selectedOption) return;
-            
-            const optionIndex = parseInt(selectedOption.dataset.index);
-            answers.push({
-                questionIndex: currentQuestionIndex,
-                question: questions[currentQuestionIndex].text,
-                answer: questions[currentQuestionIndex].options[optionIndex],
-                skill: questions[currentQuestionIndex].skill,
-                value: optionIndex + 1  // Assumindo escala de 1-5
-            });
-            
-            currentQuestionIndex++;
-            
-            if (currentQuestionIndex < questions.length) {
-                showQuestion(currentQuestionIndex);
-                updateProgressBar();
-            } else {
-                showResults();
-            }
-        }
-        
-        // Calcular e mostrar resultados
-        function showResults() {
-            assessmentForm.classList.add('hidden');
-            resultsContainer.classList.remove('hidden');
-            
-            // Calcular pontuações por habilidade
-            const skillScores = calculateSkillScores();
-            
-            // Mostrar pontuações
-            const skillScoresContainer = document.getElementById('skill-scores');
-            skillScoresContainer.innerHTML = '';
-            
-            skills.forEach(skill => {
-                const score = skillScores[skill].average.toFixed(1);
-                skillScoresContainer.innerHTML += `
-                    <div class="skill-score">
-                        <div class="skill-name">${skill}</div>
-                        <div class="skill-value">${score}</div>
-                    </div>
-                `;
-            });
-            
-            // Criar gráfico radar
-            createRadarChart(skillScores);
-        }
-        
-        // Calcular pontuações por habilidade
-        function calculateSkillScores() {
-            const skillScores = {};
-            
-            // Inicializar pontuações
-            skills.forEach(skill => {
-                skillScores[skill] = {
-                    total: 0,
-                    count: 0,
-                    average: 0
-                };
-            });
-            
-            // Somar pontuações
-            answers.forEach(answer => {
-                skillScores[answer.skill].total += answer.value;
-                skillScores[answer.skill].count++;
-            });
-            
-            // Calcular médias
-            skills.forEach(skill => {
-                if (skillScores[skill].count > 0) {
-                    skillScores[skill].average = skillScores[skill].total / skillScores[skill].count;
-                }
-            });
-            
-            return skillScores;
-        }
-        
-        // Criar gráfico radar com Chart.js
-        function createRadarChart(skillScores) {
-            const ctx = document.getElementById('radar-chart').getContext('2d');
-            
-            // Destruir gráfico anterior se existir
-            if (radarChart) {
-                radarChart.destroy();
-            }
-            
-            const data = {
-                labels: skills,
-                datasets: [{
-                    label: 'Nível de Maturidade',
-                    data: skills.map(skill => skillScores[skill].average),
-                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                    borderColor: 'rgba(52, 152, 219, 1)',
-                    pointBackgroundColor: 'rgba(52, 152, 219, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(52, 152, 219, 1)'
-                }]
-            };
-            
-            const config = {
-                type: 'radar',
-                data: data,
-                options: {
-                    scales: {
-                        r: {
-                            min: 0,
-                            max: 5,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            };
-            
-            radarChart = new Chart(ctx, config);
-        }
-        
-        // Salvar resultados no Firebase
-        async function saveResults() {
-            if (!userName || !userEmail) {
-                showNotification("Erro: Nome ou email não fornecidos.", "error");
-                return;
-            }
-            
-            // Calcular pontuações
-            const skillScores = calculateSkillScores();
-            
-            // Preparar objeto para salvar
-            const resultData = {
-                name: userName,
-                email: userEmail,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                answers: answers,
-                scores: Object.keys(skillScores).map(skill => ({
-                    skill: skill,
-                    score: skillScores[skill].average
-                }))
-            };
-            
-            try {
-                let docRef;
-                
-                // Se já temos um ID, atualizar o documento existente
-                if (assessmentId) {
-                    docRef = db.collection('assessments').doc(assessmentId);
-                    await docRef.update(resultData);
-                } else {
-                    // Caso contrário, criar um novo documento
-                    docRef = await db.collection('assessments').add(resultData);
-                    assessmentId = docRef.id;
-                }
-                
-                showNotification("Resultados salvos com sucesso!", "success");
-                showPermalink(assessmentId);
-                
-                // Desabilitar botão após salvar
-                saveResultsButton.disabled = true;
-                saveResultsButton.textContent = "Resultados Salvos";
-                
-            } catch (error) {
-                console.error("Erro ao salvar resultados:", error);
-                showNotification("Erro ao salvar resultados. Tente novamente.", "error");
-            }
-        }
-        
-        // Mostrar link permanente
-        function showPermalink(id) {
-            const url = `${window.location.href.split('?')[0]}?id=${id}`;
-            permalink.href = url;
-            permalink.textContent = url;
-            resultLink.classList.remove('hidden');
-        }
-        
-        // Mostrar notificação
-        function showNotification(message, type) {
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.classList.remove('hidden');
-            
-            // Esconder após 5 segundos
-            setTimeout(() => {
-                notification.classList.add('hidden');
-            }, 5000);
-        }
-        
-        // Resetar avaliação
-        function resetAssessment() {
-            assessmentId = null;
-            userName = "";
-            userEmail = "";
-            
-            // Resetar formulário
-            nameInput.value = "";
-            emailInput.value = "";
-            
-            // Mostrar tela inicial
-            resultsContainer.classList.add('hidden');
-            startScreen.classList.remove('hidden');
-            
-            // Resetar botão de salvar
-            saveResultsButton.disabled = false;
-            saveResultsButton.textContent = "Salvar Resultados";
-            
-            // Esconder link e notificação
-            resultLink.classList.add('hidden');
-            notification.classList.add('hidden');
-        }
-        
-        // Verificar se há um ID na URL
-        function checkForSavedResults() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
-            
-            if (id) {
-                loadSavedResult(id);
-            }
-        }
-        
-        // Carregar resultado salvo
-        async function loadSavedResult(id) {
-            try {
-                const doc = await db.collection('assessments').doc(id).get();
-                
-                if (doc.exists) {
-                    const data = doc.data();
-                    
-                    // Preencher dados do usuário
-                    userName = data.name;
-                    userEmail = data.email;
-                    answers = data.answers;
-                    assessmentId = id;
-                    
-                    // Mostrar resultados
-                    startScreen.classList.add('hidden');
-                    assessmentForm.classList.add('hidden');
-                    resultsContainer.classList.remove('hidden');
-                    
-                    // Calcular e mostrar scores
-                    const skillScores = calculateSkillScores();
-                    
-                    // Mostrar pontuações
-                    const skillScoresContainer = document.getElementById('skill-scores');
-                    skillScoresContainer.innerHTML = '';
-                    
-                    skills.forEach(skill => {
-                        const scoreObj = data.scores.find(s => s.skill === skill) || {score: 0};
-                        const score = scoreObj.score.toFixed(1);
-                        
-                        skillScoresContainer.innerHTML += `
-                            <div class="skill-score">
-                                <div class="skill-name">${skill}</div>
-                                <div class="skill-value">${score}</div>
-                            </div>
-                        `;
-                    });
-                    
-                    // Criar gráfico radar
-                    createRadarChart(skillScores);
-                    
-                    // Mostrar link permanente
-                    showPermalink(id);
-                    
-                    // Desabilitar botão de salvar
-                    saveResultsButton.disabled = true;
-                    saveResultsButton.textContent = "Resultados Salvos";
-                    
-                } else {
-                    showNotification("Avaliação não encontrada.", "error");
-                }
-            } catch (error) {
-                console.error("Erro ao carregar avaliação:", error);
-                showNotification("Erro ao carregar avaliação.", "error");
-            }
-        }
-    </script>
+  <div id="user-info">
+    <input type="text" id="user-name" placeholder="Seu nome"><br><br>
+    <input type="email" id="user-email" placeholder="Seu e-mail"><br><br>
+    <input type="text" id="user-whatsapp" placeholder="Seu número de WhatsApp (opcional)"><br><br>
+
+    <label for="user-role">Sua função atual:</label><br>
+    <select id="user-role" onchange="toggleOtherRole(this)">
+      <option value="">Selecione</option>
+      <option>APM</option>
+      <option>PO</option>
+      <option>PM Junior</option>
+      <option>PM Pleno</option>
+      <option>PM Senior</option>
+      <option>GPM</option>
+      <option>Head Produto</option>
+      <option>Diretor de Produto</option>
+      <option>Outro</option>
+    </select><br><br>
+    <input type="text" id="other-role" placeholder="Qual?" style="display:none"><br><br>
+
+    <button class="button" onclick="startAssessment()">Iniciar Avaliação</button>
+  </div>
+
+  <div id="assessment" style="display:none">
+    <div id="question-container" class="question"></div>
+    <div id="options-container"></div>
+    <button class="button" onclick="nextQuestion()">Próxima</button>
+  </div>
+
+  <div id="results-container"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuPNqRUfnMBeA8PhqsXpbYdW9MRskzyAw",
+      authDomain: "pm-assessment-tool.firebaseapp.com",
+      projectId: "pm-assessment-tool",
+      storageBucket: "pm-assessment-tool.firebasestorage.app",
+      messagingSenderId: "940100178848",
+      appId: "1:940100178848:web:547bdef241a0d587cb8ac5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const skills = [
+      "Visão de Produto", "Gestão de Stakeholders", "Pesquisa de Usuário",
+      "Métricas", "Design", "Tech", "Prioridades", "Liderança", "Execução"
+    ];
+
+    const questions = [
+      { text: "Minha equipe tem uma visão clara do produto.", skill: "Visão de Produto" },
+      { text: "Me comunico bem com stakeholders.", skill: "Gestão de Stakeholders" },
+      { text: "Realizo pesquisas com usuários frequentemente.", skill: "Pesquisa de Usuário" },
+      // Adicione suas perguntas reais aqui
+    ];
+
+    let currentQuestionIndex = 0;
+    let answers = [];
+    let userInfo = {};
+
+    function toggleOtherRole(select) {
+      document.getElementById('other-role').style.display = select.value === 'Outro' ? 'block' : 'none';
+    }
+
+    function startAssessment() {
+      const name = document.getElementById("user-name").value.trim();
+      const email = document.getElementById("user-email").value.trim();
+      const whatsapp = document.getElementById("user-whatsapp").value.trim();
+      let role = document.getElementById("user-role").value;
+      const otherRole = document.getElementById("other-role").value.trim();
+      if (!name || !email || !role) return alert("Preencha nome, e-mail e função");
+      if (role === "Outro" && otherRole) role = otherRole;
+
+      userInfo = { name, email, whatsapp, role };
+      document.getElementById("user-info").style.display = "none";
+      document.getElementById("assessment").style.display = "block";
+      showQuestion(currentQuestionIndex);
+    }
+
+    function showQuestion(index) {
+      const q = questions[index];
+      document.getElementById("question-container").innerText = q.text;
+      const options = [1, 2, 3, 4, 5];
+      document.getElementById("options-container").innerHTML = options.map(o =>
+        `<label><input type='radio' name='option' value='${o}'> ${o}</label><br>`
+      ).join('');
+    }
+
+    function nextQuestion() {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (!selected) return alert("Escolha uma opção");
+      const value = parseInt(selected.value);
+      answers.push({ skill: questions[currentQuestionIndex].skill, score: value });
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        showQuestion(currentQuestionIndex);
+      } else {
+        saveResults();
+      }
+    }
+
+    function saveResults() {
+      const result = {};
+      skills.forEach(skill => {
+        const skillAnswers = answers.filter(a => a.skill === skill);
+        const avg = skillAnswers.reduce((sum, a) => sum + a.score, 0) / skillAnswers.length || 0;
+        result[skill] = avg.toFixed(1);
+      });
+
+      db.collection("assessments").add({
+        user: userInfo,
+        result,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        showResults(result);
+      });
+    }
+
+    function showResults(result) {
+      document.getElementById("assessment").style.display = "none";
+      const container = document.getElementById("results-container");
+      container.innerHTML = `<h2>Resultado da Avaliação</h2>` +
+        skills.map(skill => `<p><strong>${skill}:</strong> ${result[skill]}</p>`).join('');
+    }
+  </script>
 </body>
 </html>
