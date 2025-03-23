@@ -107,7 +107,7 @@
   </style>
 </head>
 <body>
-  <h1>>>> Teste The Pink Guide of Product</h1>
+  <h1>Teste The Pink Guide of Product</h1>
   <p class="subtitle">Realize sua autoavaliação e descubra o nível de maturidade em cada uma das 9 habilidades como Product Management</p>
 
   <div id="user-info" class="form-box">
@@ -138,7 +138,7 @@
 <label for="user-email">Email</label>
     <input type="email" id="user-email" placeholder="seu-email@exemplo.com">
 
-    <button class="button" onclick="startAssessment()">Continuar para avaliação</button>
+    <button class="button" onclick="startAssessment()">Iniciar Autoavaliação</button>
   </div>
   <div id="assessment" class="form-box" style="display:none">
     <div class="progress-container">
@@ -173,7 +173,7 @@
   const sections = [
     {
       skill: "Estratégia e Negócio",
-      description: "Definição de visão, análise de mercado, OKRs, frameworks de priorização e estratégia",
+      description: "Entendimento do contexto de negócio, mercado e estratégia corporativa",
       questions: [
         "Conheço a estratégia da empresa",
         "Estão claros os objetivos de médio e curto prazo",
@@ -184,7 +184,7 @@
     },
     {
       skill: "Visão do Produto",
-      description: "Clareza de visão, definição de sucesso e alinhamento estratégico",
+      description: "Clareza de visão do Produto, definição de sucesso e alinhamento estratégico",
       questions: [
         "Tenho uma visão clara para o produto",
         "Tenho um PITCH pronto",
@@ -237,15 +237,19 @@
       questionDiv.className = "question-block";
       const inputName = `section${index}-q${qIndex}`;
       questionDiv.innerHTML = `
-        <p><strong>${text}</strong></p>
-        <div class="rating-scale">
-          ${[1, 2, 3, 4, 5].map(val => `
-            <label>
-              <input type="radio" name="${inputName}" value="${val}"><br>${val}
-            </label>
-          `).join("")}
-        </div>
-      `;
+  <p><strong>${text}</strong></p>
+  <div class="rating-scale">
+    ${[1, 2, 3, 4, 5].map(val => `
+      <label>
+        <input type="radio" name="${inputName}" value="${val}"><br>${val}
+      </label>
+    `).join("")}
+  </div>
+  <div style="display: flex; justify-content: space-between; font-size: 12px; color: #777; margin-top: -10px; margin-bottom: 10px;">
+    <span>Discordo totalmente</span>
+    <span>Concordo totalmente</span>
+  </div>
+`;
       container.appendChild(questionDiv);
     });
 
