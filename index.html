@@ -104,6 +104,17 @@
     th {
       background-color: #f2f2f2;
     }
+    .chart-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}
   </style>
 </head>
 <body>
@@ -154,7 +165,9 @@
   </div>
 
   <div id="results-container" class="form-box" style="display:none">
-    <canvas id="radar-chart" width="400" height="400"></canvas>
+    <div class="chart-container">
+  <canvas id="radar-chart" width="400" height="400"></canvas>
+</div>
     <div id="results-table"></div>
     <div class="form-box" style="margin-top: 40px;">
   <h2 style="color: #e91e63;">🔍 Habilidades para desenvolver</h2>
@@ -173,7 +186,7 @@
 
   <h2 style="color: #e91e63; margin-top: 40px;">📘 O Guia está disponível para você</h2>
   <p>
-    O <em>The Pink Guide of Product</em> é mais do que um livro — é um <strong>instrumento de clareza e direção</strong> para quem trabalha com produto.
+    O <em><i>The Pink Guide of Product</em></i> é mais do que um livro — é um <strong>instrumento de clareza e direção</strong> para quem trabalha com produto.
   </p>
   <p>
     Ao longo de nove capítulos, você vai encontrar:
@@ -293,7 +306,7 @@
     description: "Planejamento e execução da entrada no mercado com alinhamento entre áreas",
     questions: [
       "Temos uma estratégia clara e validada de entrada no mercado",
-      "Todos as áreas, do comercial ao atendimento estão treinados",
+      "Todas as áreas, do comercial ao atendimento estão treinados",
       "O modelo de vendas para o mercado está definido (SLG, MLG, PLG)",
       "Testamos as estratégias e modelo de vendas antes de lançar o produto",
       "Fazemos uma reunião de alinhamento interno amplo antes de ir para o mercado"
@@ -367,6 +380,7 @@
     document.getElementById("user-info").style.display = "none";
     document.getElementById("assessment").style.display = "block";
     showSection(currentSection);
+    scrollToTop();
   }
 
   function updateProgressBar(current, total) {
@@ -444,6 +458,7 @@
   function showResults(result) {
     document.getElementById("assessment").style.display = "none";
     document.getElementById("results-container").style.display = "block";
+    scrollToTop();
 
     const labels = Object.keys(result);
     const data = Object.values(result).map(v => parseFloat(v));
@@ -484,6 +499,9 @@
     `;
     document.getElementById("results-table").innerHTML = table;
   }
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 </script>
 </body>
 
