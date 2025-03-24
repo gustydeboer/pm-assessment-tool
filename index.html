@@ -465,29 +465,40 @@ canvas {
     const data = Object.values(result).map(v => parseFloat(v));
 
     new Chart(document.getElementById("radar-chart"), {
-      type: 'radar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Maturidade por Habilidade',
-          data,
-          fill: true,
-          backgroundColor: 'rgba(233,30,99,0.2)',
-          borderColor: '#e91e63',
-          pointBackgroundColor: '#e91e63'
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          r: {
-            min: 0,
-            max: 5,
-            ticks: { stepSize: 1 }
+  type: 'radar',
+  data: {
+    labels,
+    datasets: [{
+      label: 'Maturidade por Habilidade',
+      data,
+      fill: true,
+      backgroundColor: 'rgba(233,30,99,0.2)',
+      borderColor: '#e91e63',
+      pointBackgroundColor: '#e91e63'
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      r: {
+        min: 0,
+        max: 5,
+        ticks: { stepSize: 1 },
+        pointLabels: {
+          callback: function(label) {
+            if (label === "Liderança e Comportamento") {
+              return "Liderança\ne\nComportamento";
+            }
+            return label;
+          },
+          font: {
+            size: 12
           }
         }
       }
-    });
+    }
+  }
+});
 
     const table = `
       <h2>Notas por Habilidade</h2>
