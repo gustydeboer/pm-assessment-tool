@@ -467,42 +467,60 @@
   const data = Object.values(result).map(v => parseFloat(v));
 
   new Chart(document.getElementById("radar-chart"), {
-    type: 'radar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Maturidade por Habilidade',
-        data,
-        fill: true,
-        backgroundColor: 'rgba(233,30,99,0.2)',
-        borderColor: '#e91e63',
-        pointBackgroundColor: '#e91e63'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        r: {
-          min: 0,
-          max: 5,
-          ticks: { stepSize: 1 },
-          pointLabels: {
-            callback: function(label) {
-              // Força quebra de linha no rótulo específico
-              if (label === "Liderança e Comportamento") {
-                return "Liderança\ne\nComportamento";
-              }
-              return label;
-            },
-            font: {
-              size: 12
-            }
-          }
+  type: 'radar',
+  data: {
+    labels,
+    datasets: [{
+      label: 'Maturidade por Habilidade',
+      data,
+      fill: true,
+      backgroundColor: 'rgba(233,30,99,0.2)',
+      borderColor: '#e91e63',
+      pointBackgroundColor: '#e91e63',
+      pointRadius: 5,  // Ajusta o tamanho dos pontos
+      pointHoverRadius: 7  // Tamanho quando passar o mouse
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,  // Ajustado para manter proporção
+    scales: {
+      r: {
+        min: 0,
+        max: 5,
+        beginAtZero: true,
+        ticks: { 
+          stepSize: 1,
+          backdropColor: 'transparent'  // Remove fundo dos labels
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)'  // Cor mais suave para linhas de grade
+        },
+        pointLabels: {
+          font: {
+            size: 10,
+            weight: 'bold'
+          },
+          color: '#333'
         }
       }
+    },
+    plugins: {
+      legend: {
+        display: false  // Opcional: remove legenda se não precisar
+      },
+      tooltip: {
+        backgroundColor: '#e91e63',
+        titleColor: 'white',
+        bodyColor: 'white'
+      }
+    },
+    animation: {
+      duration: 1000,  // Animação mais suave
+      easing: 'easeOutQuad'
     }
-  });
+  }
+});
 
   const table = `
     <h2>Notas por Habilidade</h2>
