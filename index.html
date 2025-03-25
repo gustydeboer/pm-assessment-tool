@@ -457,60 +457,62 @@ canvas {
   }
 
   function showResults(result) {
-    document.getElementById("assessment").style.display = "none";
-    document.getElementById("results-container").style.display = "block";
-    scrollToTop();
+  document.getElementById("assessment").style.display = "none";
+  document.getElementById("results-container").style.display = "block";
+  scrollToTop();
 
-    const labels = Object.keys(result);
-    const data = Object.values(result).map(v => parseFloat(v));
+  const labels = Object.keys(result);
+  const data = Object.values(result).map(v => parseFloat(v));
 
-    new Chart(document.getElementById("radar-chart"), {
-  type: 'radar',
-  data: {
-    labels,
-    datasets: [{
-      label: 'Maturidade por Habilidade',
-      data,
-      fill: true,
-      backgroundColor: 'rgba(233,30,99,0.2)',
-      borderColor: '#e91e63',
-      pointBackgroundColor: '#e91e63'
-    }]
-  },
-  options: {
-    responsive: true,
-    scales: {
-      r: {
-        min: 0,
-        max: 5,
-        ticks: { stepSize: 1 },
-        pointLabels: {
-          callback: function(label) {
-            if (label === "Liderança e Comportamento") {
-              return "Liderança\ne\nComportamento";
+  new Chart(document.getElementById("radar-chart"), {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Maturidade por Habilidade',
+        data,
+        fill: true,
+        backgroundColor: 'rgba(233,30,99,0.2)',
+        borderColor: '#e91e63',
+        pointBackgroundColor: '#e91e63'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          min: 0,
+          max: 5,
+          ticks: { stepSize: 1 },
+          pointLabels: {
+            callback: function(label) {
+              // Força quebra de linha no rótulo específico
+              if (label === "Liderança e Comportamento") {
+                return "Liderança\ne\nComportamento";
+              }
+              return label;
+            },
+            font: {
+              size: 12
             }
-            return label;
-          },
-          font: {
-            size: 12
           }
         }
       }
     }
-  }
-});
+  });
 
-    const table = `
-      <h2>Notas por Habilidade</h2>
-      <table>
-        <thead><tr><th>Habilidade</th><th>Média</th></tr></thead>
-        <tbody>
-          ${labels.map((label, i) => `<tr><td>${label}</td><td>${data[i]}</td></tr>`).join('')}
-        </tbody>
-      </table>
-    `;
-    document.getElementById("results-table").innerHTML = table;
-  }
+  const table = `
+    <h2>Notas por Habilidade</h2>
+    <table>
+      <thead><tr><th>Habilidade</th><th>Média</th></tr></thead>
+      <tbody>
+        ${labels.map((label, i) => `<tr><td>${label}</td><td>${data[i]}</td></tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+  document.getElementById("results-table").innerHTML = table;
+}
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
