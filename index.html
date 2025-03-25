@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/gif" href="favicon-animated.gif">
+  <link rel="icon" href="favicon.png" type="image/png" />
   <title>Avaliação de Maturidade de Produto</title>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -458,9 +458,7 @@
     });
   }
 
-let radarChartInstance = null;
-
-function showResults(result) {
+  function showResults(result) {
   document.getElementById("assessment").style.display = "none";
   document.getElementById("results-container").style.display = "block";
   scrollToTop();
@@ -468,13 +466,7 @@ function showResults(result) {
   const labels = Object.keys(result);
   const data = Object.values(result).map(v => parseFloat(v));
 
-  // Destroi o gráfico anterior, se existir (evita bug de gráfico piscando)
-  if (radarChartInstance !== null) {
-    radarChartInstance.destroy();
-  }
-
-  const ctx = document.getElementById("radar-chart").getContext("2d");
-  radarChartInstance = new Chart(ctx, {
+  new Chart(document.getElementById("radar-chart"), {
     type: 'radar',
     data: {
       labels,
@@ -497,9 +489,11 @@ function showResults(result) {
           ticks: { stepSize: 1 },
           pointLabels: {
             callback: function(label) {
-              return label === "Liderança e Comportamento"
-                ? "Liderança\ne\nComportamento"
-                : label;
+              // Força quebra de linha no rótulo específico
+              if (label === "Liderança e Comportamento") {
+                return "Liderança\ne\nComportamento";
+              }
+              return label;
             },
             font: {
               size: 12
@@ -520,8 +514,6 @@ function showResults(result) {
     </table>
   `;
   document.getElementById("results-table").innerHTML = table;
-}
-
 }
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
