@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Avaliação de Maturidade de Produto</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <h1>Avaliação de Maturidade</h1>
+  <div id="results-container" style="margin-top: 20px;">
+    <canvas id="radar-chart" width="400" height="400"></canvas>
+    <div id="results-table"></div>
+  </div>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuPNqRUfnMBeA8PhqsXpbYdW9MRskzyAw",
+      authDomain: "pm-assessment-tool.firebaseapp.com",
+      projectId: "pm-assessment-tool",
+      storageBucket: "pm-assessment-tool.firebasestorage.app",
+      messagingSenderId: "940100178848",
+      appId: "1:940100178848:web:547bdef241a0d587cb8ac5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let userInfo = {
+      name: "João Silva",
+      email: "joao@email.com",
+      role: "PM Pleno"
+    };
+
+    let result = {
+      "Estratégia e Negócio": 4.0,
+      "Visão do Produto": 3.2,
+      "Discovery": 4.4,
+      "Delivery": 4.1,
+      "Go to Market": 3.7,
+      "Medir e Avaliar": 3.9,
+      "Decidir": 3.5,
+      "Growth": 2.8,
+      "Liderança e Comportamento": 3.6
+    };
+
+    let mediaFuncaoGlobal = {
+      "Estratégia e Negócio": 3.6,
+      "Visão do Produto": 3.5,
+      "Discovery": 3.9,
+      "Delivery": 3.8,
+      "Go to Market": 3.7,
+      "Medir e Avaliar": 3.6,
+      "Decidir": 3.5,
+      "Growth": 3.3,
+      "Liderança e Comportamento": 3.4
+    };
+
+    function gerarRelatorioPDF(user, result, mediaFuncao) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const nome = user.name;
+      const email = user.email;
+      const funcao = user.role;
+      const data = new Date().toLocaleString("pt-BR");
+      const acima = [], abaixo = [];
+      const habilidades = Object.keys(result);
+      habilidades.forEach(hab => {
+        const minhaNota = parseFloat(result[hab]);
+        const media = parseFloat(mediaFuncao[hab] || 0);
+        if (minhaNota > media) acima.push(hab);
+        else if (minhaNota < media) abaixo.push(hab);
+      });
+      doc.setFontSize(14);
+      doc.text("Relatório de Avaliação - Maturidade em Produto", 105, 15, { align: "center" });
+      doc.setFontSize(12);
+      doc.text(`Nome: ${nome}`, 10, 30);
+      doc.text(`Email: ${email}`, 10, 38);
+      doc.text(`Função: ${funcao}`, 10, 46);
+      doc.text(`Data: ${data}`, 10, 54);
+      doc.setFontSize(13);
+      doc.text("Notas por Habilidade:", 10, 70);
+      let y = 78;
+      habilidades.forEach(hab => {
+        doc.setFontSize(11);
+        doc.text(`${hab}: ${result[hab]} (média da função: ${mediaFuncao[hab]})`, 10, y);
+        y += 8;
+      });
+      y += 10;
+      doc.setFontSize(13);
+      doc.text("Comparativo com a função:", 10, y);
+      y += 8;
+      doc.setFontSize(11);
+      if (acima.length) doc.text(`Acima da média em: ${acima.join(', ')}`, 10, y += 8);
+      if (abaixo.length) doc.text(`Abaixo da média em: ${abaixo.join(', ')}`, 10, y += 8);
+      if (!acima.length && !abaixo.length) doc.text("Você está exatamente na média da função.", 10, y += 8);
+      doc.save(`Avaliacao_${nome.replace(/\s/g, "_")}.pdf`);
+    }
+
+    const btn = document.createElement("button");
+    btn.innerText = "📄 Baixar Relatório em PDF";
+    btn.onclick = () => gerarRelatorioPDF(userInfo, result, mediaFuncaoGlobal);
+    document.getElementById("results-container").appendChild(btn);
+  </script>
+</body>
+</html>
