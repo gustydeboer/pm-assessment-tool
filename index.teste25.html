@@ -579,21 +579,70 @@ function exibirTabelaComMedia(result, mediaFuncao) {
   }
 });
 
-  const table = `
-    <h2>Notas por Habilidade</h2>
-    <table>
-      <thead><tr><th>Habilidade</th><th>Média</th></tr></thead>
-      <tbody>
-        ${labels.map((label, i) => `<tr><td>${label}</td><td>${data[i]}</td></tr>`).join('')}
-      </tbody>
-    </table>
-  `;
-  document.getElementById("results-table").innerHTML = table;
   carregarMediaDaFuncaoEExibirTabela(result);
 }
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+function carregarMediaDaFuncaoEExibirTabela(result) {
+  db.collection("assessments")
+    .where("user.role", "==", userInfo.role)
+    .get()
+    .then(snapshot => {
+      const acumulado = {};
+      const labels = Object.keys(result);
+
+      labels.forEach(label => acumulado[label] = []);
+
+      snapshot.forEach(doc => {
+        const r = doc.data().result || {};
+        labels.forEach(label => {
+          if (r[label]) acumulado[label].push(parseFloat(r[label]));
+        });
+      });
+
+      const mediaFuncao = {};
+      labels.forEach(label => {
+        const valores = acumulado[label];
+        const media = valores.length
+          ? (valores.reduce((a, b) => a + b, 0) / valores.length)
+          : 0;
+        mediaFuncao[label] = media.toFixed(1);
+      });
+
+      exibirTabelaComMedia(result, mediaFuncao);
+    });
+}
+
+function exibirTabelaComMedia(result, mediaFuncao) {
+  const labels = Object.keys(result);
+  const userData = Object.values(result).map(v => parseFloat(v));
+
+  const table = `
+    <h2>Notas por Habilidade</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Habilidade</th>
+          <th>Sua Nota</th>
+          <th>Média da Função (${userInfo.role})</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${labels.map((label, i) => `
+          <tr>
+            <td>${label}</td>
+            <td>${userData[i]}</td>
+            <td>${mediaFuncao[label]}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  document.getElementById("results-table").innerHTML = table;
+}
+
+
 </script>
 </body>
 
