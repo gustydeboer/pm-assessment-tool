@@ -472,6 +472,70 @@ function desenharRadarComparativo(...) { ... }
 
   const labels = Object.keys(result);
   const data = Object.values(result).map(v => parseFloat(v));
+<script>
+function desenharRadarComparativo(userResult, mediaFuncao) {
+  const labels = Object.keys(userResult);
+  const userData = labels.map(label => parseFloat(userResult[label]));
+  const mediaData = labels.map(label => parseFloat(mediaFuncao[label]));
+
+  const ctx = document.getElementById("radar-chart").getContext("2d");
+
+  new Chart(ctx, {
+    type: "radar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Sua Autoavaliação",
+          data: userData,
+          fill: true,
+          backgroundColor: "rgba(233,30,99,0.2)",
+          borderColor: "#e91e63",
+          pointBackgroundColor: "#e91e63",
+        },
+        {
+          label: `Média da Função (${userInfo.role})`,
+          data: mediaData,
+          fill: false,
+          borderColor: "#3f51b5",
+          pointBackgroundColor: "#3f51b5",
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        r: {
+          min: 0,
+          max: 5,
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            backdropColor: "transparent"
+          },
+          grid: {
+            color: "rgba(0, 0, 0, 0.1)"
+          },
+          pointLabels: {
+            font: {
+              size: 10,
+              weight: "bold"
+            },
+            color: "#333"
+          }
+        }
+      },
+      plugins: {
+        tooltip: {
+          backgroundColor: "#333",
+          titleColor: "#fff",
+          bodyColor: "#fff"
+        }
+      }
+    }
+  });
+}
+</script>
 
   carregarMediaDaFuncaoEExibirTabela(result);
 }
