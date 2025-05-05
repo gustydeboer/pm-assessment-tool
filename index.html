@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="favicon.png" type="image/png" />
   <title>Avaliação de Maturidade de Produto</title>
+  <!-- Importações de scripts organizadas corretamente -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -105,18 +106,17 @@
     th {
       background-color: #f2f2f2;
     }
-.chart-container {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  position: relative;
-  height: auto;
-}
-
-#radar-chart {
-  width: 100% !important;
-  height: auto !important;
-}
+    .chart-container {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      position: relative;
+      height: 500px; /* Altura fixa para garantir visibilidade */
+    }
+    #radar-chart {
+      width: 100% !important;
+      height: 100% !important;
+    }
   </style>
 </head>
 <body>
@@ -148,7 +148,7 @@
     <label for="user-whatsapp">WhatsApp (opcional) - facilita a comunicação e atualização dos seus resultados e recomendaçôes.</label>
     <input type="text" id="user-whatsapp" placeholder="(11) 9XXXX-XXXX">
 
-<label for="user-email">Email *</label>
+    <label for="user-email">Email *</label>
     <input type="email" id="user-email" placeholder="seu-email@exemplo.com">
 
     <button class="button" onclick="startAssessment()">Iniciar Autoavaliação</button>
@@ -168,379 +168,454 @@
 
   <div id="results-container" class="form-box" style="display:none">
     <div class="chart-container">
-  <canvas id="radar-chart" width="400" height="400"></canvas>
-</div>
+      <canvas id="radar-chart"></canvas>
+    </div>
     <div id="results-table"></div>
     <div class="form-box" style="margin-top: 40px;">
-  <h2 style="color: #e91e63;">🔍 Habilidades para desenvolver</h2>
-  <p>
-    As habilidades com nota <strong>abaixo de 3</strong> representam áreas-chave onde você pode focar seu desenvolvimento.
-    Essas competências são fundamentais para fortalecer sua base como pessoa de produto, independentemente do seu nível atual.
-  </p>
-  <p>
-    Em breve, você poderá visualizar comparativos por função — para entender melhor o que é esperado de um(a) APM, PM, GPM ou Head, por exemplo.
-    Assim, poderá <strong>ajustar seu radar</strong> com clareza para assumir plenamente o cargo atual e preparar-se para o próximo passo.
-  </p>
-  <p>
-    <strong>Dica:</strong> Busque o capítulo correspondente no livro <em>The Pink Guide of Product</em> para ir direto ao ponto.
-    Cada capítulo traz uma <strong>caixa de ferramentas</strong> com modelos práticos, reflexões e templates para acelerar sua evolução — e a do seu produto também.
-  </p>
+      <h2 style="color: #e91e63;">🔍 Habilidades para desenvolver</h2>
+      <p>
+        As habilidades com nota <strong>abaixo de 3</strong> representam áreas-chave onde você pode focar seu desenvolvimento.
+        Essas competências são fundamentais para fortalecer sua base como pessoa de produto, independentemente do seu nível atual.
+      </p>
+      <p>
+        Agora, você pode visualizar comparativos por função — para entender melhor o que é esperado de um(a) APM, PM, GPM ou Head, por exemplo.
+        Atenção, com essa informação em mãos, você poderá <strong>ajustar seu radar</strong> com clareza para assumir plenamente o cargo atual e preparar-se para o próximo passo.
+        Use o seu Pink Guide of Product para poder buscar evoluir. Mas cuidado, ao buscar evolução em um tema, use o capítulo como um todo e não apenas foque em um pedaço ou outro.
+      </p>
+      <p>
+        <strong>Dica:</strong> Busque o capítulo correspondente no livro <em>The Pink Guide of Product</em> para ir direto ao ponto.
+        Cada capítulo traz uma <strong>caixa de ferramentas</strong> com modelos práticos, reflexões e templates para acelerar sua evolução — e a do seu produto também.
+      </p>
 
-  <h2 style="color: #e91e63; margin-top: 40px;">📘 O Guia está disponível para você</h2>
-  <p>
-    O <em><i>The Pink Guide of Product</em></i> é mais do que um livro — é um <strong>instrumento de clareza e direção</strong> para quem trabalha com produto.
-  </p>
-  <p>
-    Ao longo de nove capítulos, você vai encontrar:
-    <ul>
-      <li>✅ Explicações diretas e profundas sobre cada habilidade</li>
-      <li>✅ Ferramentas práticas e templates prontos para usar</li>
-      <li>✅ Reflexões para guiar seu desenvolvimento com autonomia</li>
-    </ul>
-  </p>
-  <p>
-    📦 Tudo isso com uma linguagem acessível e um design leve, que convida à ação.
-    Se você quer acelerar sua carreira com consciência e consistência, o guia está pronto para te acompanhar.
-  </p>
-  <a href="https://www.pinkguideofproduct.com/product-page" target="_blank" class="button" style="margin-top: 15px;">👉 Acessar o Guia</a>
+      <h2 style="color: #e91e63; margin-top: 40px;">📘 O Guia está disponível para você</h2>
+      <p>
+        O <em><i>The Pink Guide of Product</em></i> é mais do que um livro — é um <strong>instrumento de clareza e direção</strong> para quem trabalha com produto.
+      </p>
+      <p>
+        Ao longo de nove capítulos, você vai encontrar:
+      </p>
+      <ul>
+        <li>✅ Explicações diretas e profundas sobre cada habilidade</li>
+        <li>✅ Ferramentas práticas e templates prontos para usar</li>
+        <li>✅ Reflexões para guiar seu desenvolvimento com autonomia</li>
+      </ul>
+      <p>
+        📦 Tudo isso com uma linguagem acessível e um design leve, que convida à ação.
+        Se você quer acelerar sua carreira com consciência e consistência, o guia está pronto para te acompanhar.
+      </p>
+      <a href="https://www.pinkguideofproduct.com/product-page" target="_blank" class="button" style="margin-top: 15px;">👉 Acessar o Guia</a>
 
-  <h2 style="color: #e91e63; margin-top: 40px;">🎓 Cursos recomendados</h2>
-  <p>
-    Esta seção está em construção! 🤖<br>
-    Estamos fechando parcerias com plataformas que compartilham da nossa visão sobre desenvolvimento humano e técnico em produto.
-  </p>
-  <p>
-    Enquanto isso, o <strong>Pink Guide</strong> continua sendo seu melhor ponto de partida, com conteúdos diretos e ferramentas acionáveis.
-  </p>
-  <p>
-    Em breve, você poderá:
-    <ul>
-      <li>📚 Explorar trilhas por habilidade</li>
-      <li>📊 Comparar seu radar com benchmarks por cargo</li>
-      <li>🚀 Receber indicações de cursos alinhados com seu momento atual</li>
-    </ul>
-  </p>
+      <h2 style="color: #e91e63; margin-top: 40px;">🎓 Cursos recomendados</h2>
+      <p>
+        Esta seção está em construção! 🤖<br>
+        Estamos fechando parcerias com plataformas que compartilham da nossa visão sobre desenvolvimento humano e técnico em produto.
+      </p>
+      <p>
+        Enquanto isso, o <strong>Pink Guide</strong> continua sendo seu melhor ponto de partida, com conteúdos diretos e ferramentas acionáveis.
+      </p>
+      <p>
+        Em breve, você poderá:
+      </p>
+      <ul>
+        <li>📚 Explorar trilhas por habilidade</li>
+        <li>📊 Comparar seu radar com benchmarks por cargo</li>
+        <li>🚀 Receber indicações de cursos alinhados com seu momento atual</li>
+      </ul>
 
-  <h2 style="color: #e91e63; margin-top: 40px;">💬 Mentoria individual com Gus de Boer</h2>
-  <p>
-    Quer conversar sobre seus próximos passos? Está em transição de carreira ou buscando evoluir em alguma habilidade específica?
-  </p>
-  <p>
-    Agende uma mentoria comigo pela plataforma <a href="https://adplist.org/mentors/gustavo-de-boer-endo" target="_blank">ADPList</a>.
-    São encontros gratuitos, 100% online, voltados para orientar PMs em diferentes momentos da jornada:
-  </p>
-  <ul>
-    <li>🧭 Reposicionamento profissional</li>
-    <li>🎯 Direcionamento de aprendizado</li>
-    <li>🚀 Preparação para crescimento e liderança</li>
-  </ul>
-  <p>
-    A mentoria é um espaço seguro, acolhedor e objetivo — e está à sua disposição.
-  </p>
-  <a href="https://adplist.org/mentors/gustavo-de-boer-endo" target="_blank" class="button" style="margin-top: 15px;">🤝 Agendar Mentoria</a>
+      <h2 style="color: #e91e63; margin-top: 40px;">💬 Mentoria individual com Gus de Boer</h2>
+      <p>
+        Quer conversar sobre seus próximos passos? Está em transição de carreira ou buscando evoluir em alguma habilidade específica?
+      </p>
+      <p>
+        Agende uma mentoria comigo pela plataforma <a href="https://adplist.org/mentors/gustavo-de-boer-endo" target="_blank">ADPList</a>.
+        São encontros gratuitos, 100% online, voltados para orientar PMs em diferentes momentos da jornada:
+      </p>
+      <ul>
+        <li>🧭 Reposicionamento profissional</li>
+        <li>🎯 Direcionamento de aprendizado</li>
+        <li>🚀 Preparação para crescimento e liderança</li>
+      </ul>
+      <p>
+        A mentoria é um espaço seguro, acolhedor e objetivo — e está à sua disposição.
+      </p>
+      <a href="https://adplist.org/mentors/gustavo-de-boer-endo" target="_blank" class="button" style="margin-top: 15px;">🤝 Agendar Mentoria</a>
 
-  <p style="margin-top: 40px; font-style: italic; color: #777;">
-    Cada habilidade que você desenvolve te aproxima mais de se tornar uma referência em Produto.
-    Continue caminhando com leveza, coragem e direção. 💗
-  </p>
-</div>
+      <p style="margin-top: 40px; font-style: italic; color: #777;">
+        Cada habilidade que você desenvolve te aproxima mais de se tornar uma referência em Produto.
+        Continue caminhando com leveza, coragem e direção. 💗
+      </p>
+    </div>
   </div>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBuPNqRUfnMBeA8PhqsXpbYdW9MRskzyAw",
-    authDomain: "pm-assessment-tool.firebaseapp.com",
-    projectId: "pm-assessment-tool",
-    storageBucket: "pm-assessment-tool.firebasestorage.app",
-    messagingSenderId: "940100178848",
-    appId: "1:940100178848:web:547bdef241a0d587cb8ac5"
-  };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuPNqRUfnMBeA8PhqsXpbYdW9MRskzyAw",
+      authDomain: "pm-assessment-tool.firebaseapp.com",
+      projectId: "pm-assessment-tool",
+      storageBucket: "pm-assessment-tool.firebasestorage.app",
+      messagingSenderId: "940100178848",
+      appId: "1:940100178848:web:547bdef241a0d587cb8ac5"
+    };
 
-  const sections = [
-  {
-    skill: "Estratégia e Negócio",
-    description: "Entendimento do contexto de negócio, mercado e estratégia corporativa",
-    questions: [
-      "Conheço a estratégia da empresa",
-      "Estão claros os objetivos de médio e curto prazo",
-      "Eu entendo como a empresa ganha dinheiro",
-      "Conheço os concorrentes e substitutos",
-      "Estou atento às mudanças de mercado e tecnologia"
-    ]
-  },
-  {
-    skill: "Visão do Produto",
-    description: "Clareza de visão do Produto, definição de sucesso e alinhamento estratégico",
-    questions: [
-      "Tenho uma visão clara para o produto",
-      "Tenho um PITCH pronto",
-      "Conheço as alavancas de receita do produto",
-      "Tenho clareza do que é sucesso para o produto",
-      "O produto está alinhado com a estratégia da empresa"
-    ]
-  },
-  {
-    skill: "Discovery",
-    description: "Conhecimento das personas, validação de ideias e testes antes do desenvolvimento",
-    questions: [
-      "Tenho clareza de quem são as personas do produto",
-      "Conheço as jornadas dos usuários",
-      "Sempre desenhamos protótipos de features / produtos",
-      "As features são testadas antes de ir para o delivery",
-      "Já matamos features / ideias na fase de discovery"
-    ]
-  },
-  {
-    skill: "Delivery",
-    description: "Execução, clareza de entregas e alinhamento com o time e stakeholders",
-    questions: [
-      "Tenho clareza do MVP ou da feature a ser desenvolvido",
-      "Todos do time entendem e estão comprometidos com a entrega",
-      "O time tem clareza de como as atividades estão conectadas com a estratégia",
-      "Fazemos refinamento constantemente",
-      "Damos clareza para os stakeholders das estimativas de entrega"
-    ]
-  },
-  {
-    skill: "Go to Market",
-    description: "Planejamento e execução da entrada no mercado com alinhamento entre áreas",
-    questions: [
-      "Temos uma estratégia clara e validada de entrada no mercado",
-      "Todas as áreas, do comercial ao atendimento estão treinados",
-      "O modelo de vendas para o mercado está definido (SLG, MLG, PLG)",
-      "Testamos as estratégias e modelo de vendas antes de lançar o produto",
-      "Fazemos uma reunião de alinhamento interno amplo antes de ir para o mercado"
-    ]
-  },
-  {
-    skill: "Medir e Avaliar",
-    description: "Uso de dados, indicadores e metas para acompanhar a performance do produto",
-    questions: [
-      "Temos dados organizados e disponíveis para análises do time de produtos",
-      "Temos clareza dos indicadores estratégicos",
-      "Criamos uma árvore de indicadores de input e output",
-      "Temos clareza de indicadores de adequação, saúde, melhoria e vaidade",
-      "Temos metas claras e realizamos projeções"
-    ]
-  },
-  {
-    skill: "Decidir",
-    description: "Capacidade de tomar decisões, ajustar rotas e assumir responsabilidades",
-    questions: [
-      "Tenho autonomia para decidir sobre o produto",
-      "Aplico o PDCA constantemente em meu dia-a-dia",
-      "Não postergo decisões por medo ou falta de informação",
-      "Consigo mudar rotas quando vejo que estamos desviando dos objetivos",
-      "Tomo as melhores decisões possíveis, alinho e assumo as responsabilidades"
-    ]
-  },
-  {
-    skill: "Growth",
-    description: "Foco no crescimento do produto com base em dados, ciclo de vida e oportunidades",
-    questions: [
-      "Conheço o estágio do ciclo de vida do meu produto",
-      "Aplico estratégias de crescimento de acordo com o estágio do produto/ feature",
-      "Utilizo dados de usuários e analytics para basear as decisões",
-      "Trago insights para a evolução do produto, negócio e experiência do usuário",
-      "Tenho objetivos claros de crescimento"
-    ]
-  },
-  {
-    skill: "Liderança e Comportamento",
-    description: "Ações e atitudes que promovem cultura de equipe, proximidade com o usuário e aprendizado contínuo",
-    questions: [
-      "Fomento uma cultura de colaboração e comunicação aberta",
-      "Nunca perdemos de vista o cliente / usuário",
-      "Trabalho com ferramentas de gestão à vista",
-      "Testo o produto, acompanho usuários em testes e situações reais de uso",
-      "Vou com frequência a eventos, almoços e conversas com fornecedores"
-    ]
-  }
-];
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  let userInfo = {};
-  let currentSection = 0;
-  let answers = [];
+    const sections = [
+      {
+        skill: "Estratégia e Negócio",
+        description: "Entendimento do contexto de negócio, mercado e estratégia corporativa",
+        questions: [
+          "Conheço a estratégia da empresa",
+          "Estão claros os objetivos de médio e curto prazo",
+          "Eu entendo como a empresa ganha dinheiro",
+          "Conheço os concorrentes e substitutos",
+          "Estou atento às mudanças de mercado e tecnologia"
+        ]
+      },
+      {
+        skill: "Visão do Produto",
+        description: "Clareza de visão do Produto, definição de sucesso e alinhamento estratégico",
+        questions: [
+          "Tenho uma visão clara para o produto",
+          "Tenho um PITCH pronto",
+          "Conheço as alavancas de receita do produto",
+          "Tenho clareza do que é sucesso para o produto",
+          "O produto está alinhado com a estratégia da empresa"
+        ]
+      },
+      {
+        skill: "Discovery",
+        description: "Conhecimento das personas, validação de ideias e testes antes do desenvolvimento",
+        questions: [
+          "Tenho clareza de quem são as personas do produto",
+          "Conheço as jornadas dos usuários",
+          "Sempre desenhamos protótipos de features / produtos",
+          "As features são testadas antes de ir para o delivery",
+          "Já matamos features / ideias na fase de discovery"
+        ]
+      },
+      {
+        skill: "Delivery",
+        description: "Execução, clareza de entregas e alinhamento com o time e stakeholders",
+        questions: [
+          "Tenho clareza do MVP ou da feature a ser desenvolvido",
+          "Todos do time entendem e estão comprometidos com a entrega",
+          "O time tem clareza de como as atividades estão conectadas com a estratégia",
+          "Fazemos refinamento constantemente",
+          "Damos clareza para os stakeholders das estimativas de entrega"
+        ]
+      },
+      {
+        skill: "Go to Market",
+        description: "Planejamento e execução da entrada no mercado com alinhamento entre áreas",
+        questions: [
+          "Temos uma estratégia clara e validada de entrada no mercado",
+          "Todas as áreas, do comercial ao atendimento estão treinados",
+          "O modelo de vendas para o mercado está definido (SLG, MLG, PLG)",
+          "Testamos as estratégias e modelo de vendas antes de lançar o produto",
+          "Fazemos uma reunião de alinhamento interno amplo antes de ir para o mercado"
+        ]
+      },
+      {
+        skill: "Medir e Avaliar",
+        description: "Uso de dados, indicadores e metas para acompanhar a performance do produto",
+        questions: [
+          "Temos dados organizados e disponíveis para análises do time de produtos",
+          "Temos clareza dos indicadores estratégicos",
+          "Criamos uma árvore de indicadores de input e output",
+          "Temos clareza de indicadores de adequação, saúde, melhoria e vaidade",
+          "Temos metas claras e realizamos projeções"
+        ]
+      },
+      {
+        skill: "Decidir",
+        description: "Capacidade de tomar decisões, ajustar rotas e assumir responsabilidades",
+        questions: [
+          "Tenho autonomia para decidir sobre o produto",
+          "Aplico o PDCA constantemente em meu dia-a-dia",
+          "Não postergo decisões por medo ou falta de informação",
+          "Consigo mudar rotas quando vejo que estamos desviando dos objetivos",
+          "Tomo as melhores decisões possíveis, alinho e assumo as responsabilidades"
+        ]
+      },
+      {
+        skill: "Growth",
+        description: "Foco no crescimento do produto com base em dados, ciclo de vida e oportunidades",
+        questions: [
+          "Conheço o estágio do ciclo de vida do meu produto",
+          "Aplico estratégias de crescimento de acordo com o estágio do produto/ feature",
+          "Utilizo dados de usuários e analytics para basear as decisões",
+          "Trago insights para a evolução do produto, negócio e experiência do usuário",
+          "Tenho objetivos claros de crescimento"
+        ]
+      },
+      {
+        skill: "Liderança e Comportamento",
+        description: "Ações e atitudes que promovem cultura de equipe, proximidade com o usuário e aprendizado contínuo",
+        questions: [
+          "Fomento uma cultura de colaboração e comunicação aberta",
+          "Nunca perdemos de vista o cliente / usuário",
+          "Trabalho com ferramentas de gestão à vista",
+          "Testo o produto, acompanho usuários em testes e situações reais de uso",
+          "Vou com frequência a eventos, almoços e conversas com fornecedores"
+        ]
+      }
+    ];
 
-  function toggleOtherRole(select) {
-    document.getElementById('other-role').style.display = select.value === 'Outro' ? 'block' : 'none';
-  }
+    let userInfo = {};
+    let currentSection = 0;
+    let answers = [];
 
-  function startAssessment() {
-    const name = document.getElementById("user-name").value.trim();
-    const email = document.getElementById("user-email").value.trim();
-    const whatsapp = document.getElementById("user-whatsapp").value.trim();
-    let role = document.getElementById("user-role").value;
-    const otherRole = document.getElementById("other-role").value.trim();
-    if (!name || !role || !email) {return alert("Preencha nome, cargo atual e email.");
-                                   }
-    if (role === "Outro" && otherRole) role = otherRole;
+    function toggleOtherRole(select) {
+      document.getElementById('other-role').style.display = select.value === 'Outro' ? 'block' : 'none';
+    }
 
-    userInfo = { name, email, whatsapp, role };
-    document.getElementById("user-info").style.display = "none";
-    document.getElementById("assessment").style.display = "block";
-    showSection(currentSection);
-    scrollToTop();
-  }
+    function startAssessment() {
+      const name = document.getElementById("user-name").value.trim();
+      const email = document.getElementById("user-email").value.trim();
+      const whatsapp = document.getElementById("user-whatsapp").value.trim();
+      let role = document.getElementById("user-role").value;
+      const otherRole = document.getElementById("other-role").value.trim();
+      
+      if (!name || !role || !email) {
+        return alert("Preencha nome, cargo atual e email.");
+      }
+      
+      if (role === "Outro" && otherRole) role = otherRole;
 
-  function updateProgressBar(current, total) {
-    const percent = Math.round((current / total) * 100);
-    document.getElementById('progress-bar').style.width = percent + '%';
-  }
-
-  function showSection(index) {
-    const section = sections[index];
-    document.getElementById("section-title").innerText = `${index + 1}. ${section.skill}`;
-    document.getElementById("section-description").innerText = section.description;
-
-    const container = document.getElementById("question-container");
-    container.innerHTML = "";
-
-    section.questions.forEach((text, qIndex) => {
-      const questionDiv = document.createElement("div");
-      questionDiv.className = "question-block";
-      const inputName = `section${index}-q${qIndex}`;
-      questionDiv.innerHTML = `
-  <p><strong>${text}</strong></p>
-  <div class="rating-scale">
-    ${[1, 2, 3, 4, 5].map(val => `
-      <label>
-        <input type="radio" name="${inputName}" value="${val}"><br>${val}
-      </label>
-    `).join("")}
-  </div>
-  <div style="display: flex; justify-content: space-between; font-size: 12px; color: #777; margin-top: -10px; margin-bottom: 10px;">
-    <span>Discordo totalmente</span>
-    <span>Concordo totalmente</span>
-  </div>
-`;
-      container.appendChild(questionDiv);
-    });
-
-    updateProgressBar(index, sections.length);
-  }
-
-  function nextQuestion() {
-    const radios = document.querySelectorAll(`#question-container input[type="radio"]:checked`);
-    if (radios.length < 5) return alert("Responda todas as perguntas antes de continuar.");
-
-    const section = sections[currentSection];
-    section.questions.forEach((text, i) => {
-      const val = document.querySelector(`input[name="section${currentSection}-q${i}"]:checked`).value;
-      answers.push({ skill: section.skill, score: parseInt(val) });
-    });
-
-    currentSection++;
-    if (currentSection < sections.length) {
+      userInfo = { name, email, whatsapp, role };
+      document.getElementById("user-info").style.display = "none";
+      document.getElementById("assessment").style.display = "block";
       showSection(currentSection);
       scrollToTop();
-    } else {
-      saveResults();
     }
-  }
 
-  function saveResults() {
-    const result = {};
-    sections.forEach(sec => {
-      const skillAnswers = answers.filter(a => a.skill === sec.skill);
-      const avg = skillAnswers.reduce((sum, a) => sum + a.score, 0) / skillAnswers.length;
-      result[sec.skill] = avg.toFixed(1);
-    });
+    function updateProgressBar(current, total) {
+      const percent = Math.round((current / total) * 100);
+      document.getElementById('progress-bar').style.width = percent + '%';
+    }
 
-    db.collection("assessments").add({
-      user: userInfo,
-      result,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-      showResults(result);
-    });
-  }
+    function showSection(index) {
+      const section = sections[index];
+      document.getElementById("section-title").innerText = `${index + 1}. ${section.skill}`;
+      document.getElementById("section-description").innerText = section.description;
 
-  function showResults(result) {
-  document.getElementById("assessment").style.display = "none";
-  document.getElementById("results-container").style.display = "block";
-  scrollToTop();
+      const container = document.getElementById("question-container");
+      container.innerHTML = "";
 
-  const labels = Object.keys(result);
-  const data = Object.values(result).map(v => parseFloat(v));
+      section.questions.forEach((text, qIndex) => {
+        const questionDiv = document.createElement("div");
+        questionDiv.className = "question-block";
+        const inputName = `section${index}-q${qIndex}`;
+        questionDiv.innerHTML = `
+          <p><strong>${text}</strong></p>
+          <div class="rating-scale">
+            ${[1, 2, 3, 4, 5].map(val => `
+              <label>
+                <input type="radio" name="${inputName}" value="${val}"><br>${val}
+              </label>
+            `).join("")}
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #777; margin-top: -10px; margin-bottom: 10px;">
+            <span>Discordo totalmente</span>
+            <span>Concordo totalmente</span>
+          </div>
+        `;
+        container.appendChild(questionDiv);
+      });
 
-  new Chart(document.getElementById("radar-chart"), {
-  type: 'radar',
-  data: {
-    labels,
-    datasets: [{
-      label: 'Maturidade por Habilidade',
-      data,
-      fill: true,
-      backgroundColor: 'rgba(233,30,99,0.2)',
-      borderColor: '#e91e63',
-      pointBackgroundColor: '#e91e63',
-      pointRadius: 5,  // Ajusta o tamanho dos pontos
-      pointHoverRadius: 7  // Tamanho quando passar o mouse
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: true,  // Ajustado para manter proporção
-    scales: {
-      r: {
-        min: 0,
-        max: 5,
-        beginAtZero: true,
-        ticks: { 
-          stepSize: 1,
-          backdropColor: 'transparent'  // Remove fundo dos labels
+      updateProgressBar(index, sections.length);
+    }
+
+    function nextQuestion() {
+      const radios = document.querySelectorAll(`#question-container input[type="radio"]:checked`);
+      if (radios.length < 5) return alert("Responda todas as perguntas antes de continuar.");
+
+      const section = sections[currentSection];
+      section.questions.forEach((text, i) => {
+        const val = document.querySelector(`input[name="section${currentSection}-q${i}"]:checked`).value;
+        answers.push({ skill: section.skill, score: parseInt(val) });
+      });
+
+      currentSection++;
+      if (currentSection < sections.length) {
+        showSection(currentSection);
+        scrollToTop();
+      } else {
+        saveResults();
+      }
+    }
+
+    function saveResults() {
+      const result = {};
+      sections.forEach(sec => {
+        const skillAnswers = answers.filter(a => a.skill === sec.skill);
+        const avg = skillAnswers.reduce((sum, a) => sum + a.score, 0) / skillAnswers.length;
+        result[sec.skill] = avg.toFixed(1);
+      });
+
+      db.collection("assessments").add({
+        user: userInfo,
+        result,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        showResults(result);
+      });
+    }
+
+    function showResults(result) {
+      document.getElementById("assessment").style.display = "none";
+      document.getElementById("results-container").style.display = "block";
+      scrollToTop();
+      
+      carregarMediaDaFuncaoEExibirTabela(result);
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function carregarMediaDaFuncaoEExibirTabela(result) {
+      db.collection("assessments")
+        .where("user.role", "==", userInfo.role)
+        .get()
+        .then(snapshot => {
+          const acumulado = {};
+          const labels = Object.keys(result);
+
+          labels.forEach(label => acumulado[label] = []);
+
+          snapshot.forEach(doc => {
+            const r = doc.data().result || {};
+            labels.forEach(label => {
+              if (r[label]) acumulado[label].push(parseFloat(r[label]));
+            });
+          });
+
+          const mediaFuncao = {};
+          labels.forEach(label => {
+            const valores = acumulado[label];
+            const media = valores.length
+              ? (valores.reduce((a, b) => a + b, 0) / valores.length)
+              : 0;
+            mediaFuncao[label] = media.toFixed(1);
+          });
+
+          exibirTabelaComMedia(result, mediaFuncao);
+          desenharRadarComparativo(result, mediaFuncao);
+        });
+    }
+
+    function exibirTabelaComMedia(result, mediaFuncao) {
+      const labels = Object.keys(result);
+      const userData = Object.values(result).map(v => parseFloat(v));
+
+      const table = `
+        <h2>Notas por Habilidade</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Habilidade</th>
+              <th>Sua Nota</th>
+              <th>Média da Função (${userInfo.role})</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${labels.map((label, i) => `
+              <tr>
+                <td>${label}</td>
+                <td>${userData[i]}</td>
+                <td>${mediaFuncao[label]}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      document.getElementById("results-table").innerHTML = table;
+    }
+
+    // Função para desenhar o gráfico de radar comparativo
+    function desenharRadarComparativo(result, mediaFuncao) {
+      const labels = Object.keys(result);
+      const userData = labels.map(label => parseFloat(result[label]));
+      const mediaData = labels.map(label => parseFloat(mediaFuncao[label]));
+      
+      // Verificar se já existe um chart e destruí-lo
+      if (window.radarChart) {
+        window.radarChart.destroy();
+      }
+
+      // Criar um novo chart
+      window.radarChart = new Chart(document.getElementById("radar-chart"), {
+        type: 'radar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Sua Nota',
+              data: userData,
+              fill: true,
+              backgroundColor: 'rgba(233,30,99,0.2)',
+              borderColor: '#e91e63',
+              pointBackgroundColor: '#e91e63',
+              pointRadius: 5,
+              pointHoverRadius: 7
+            },
+            {
+              label: `Média da Função (${userInfo.role})`,
+              data: mediaData,
+              fill: false,
+              borderColor: 'rgba(0, 123, 255, 0.8)',
+              borderDash: [5, 5],
+              pointBackgroundColor: 'rgba(0, 123, 255, 1)',
+              pointRadius: 5,
+              pointHoverRadius: 7
+            }
+          ]
         },
-        grid: {
-          color: 'rgba(0, 0, 0, 0.1)'  // Cor mais suave para linhas de grade
-        },
-        pointLabels: {
-          font: {
-            size: 10,
-            weight: 'bold'
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              min: 0,
+              max: 5,
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1,
+                backdropColor: 'transparent'
+              },
+              grid: {
+                color: 'rgba(0, 0, 0, 0.1)'
+              },
+              pointLabels: {
+                font: {
+                  size: 10,
+                  weight: 'bold'
+                },
+                color: '#333'
+              }
+            }
           },
-          color: '#333'
+          plugins: {
+            legend: { display: true },
+            tooltip: {
+              backgroundColor: '#e91e63',
+              titleColor: 'white',
+              bodyColor: 'white'
+            }
+          },
+          animation: {
+            duration: 1000,
+            easing: 'easeOutQuad'
+          }
         }
-      }
-    },
-    plugins: {
-      legend: {
-        display: false  // Opcional: remove legenda se não precisar
-      },
-      tooltip: {
-        backgroundColor: '#e91e63',
-        titleColor: 'white',
-        bodyColor: 'white'
-      }
-    },
-    animation: {
-      duration: 1000,  // Animação mais suave
-      easing: 'easeOutQuad'
+      });
     }
-  }
-});
-
-  const table = `
-    <h2>Notas por Habilidade</h2>
-    <table>
-      <thead><tr><th>Habilidade</th><th>Média</th></tr></thead>
-      <tbody>
-        ${labels.map((label, i) => `<tr><td>${label}</td><td>${data[i]}</td></tr>`).join('')}
-      </tbody>
-    </table>
-  `;
-  document.getElementById("results-table").innerHTML = table;
-}
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-</script>
+  </script>
 </body>
 
 <footer>
-        <p>&copy; 2025 - todos os direitos reservados para The Pink Guide of Product</p>
-    </footer>
-
+  <p>&copy; 2025 - todos os direitos reservados para The Pink Guide of Product</p>
+</footer>
 </html>
