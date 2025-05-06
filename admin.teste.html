@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Avaliações PM</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f7f9fc;
+    }
+    .container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #e91e63;
+      margin-bottom: 30px;
+    }
+    h2 {
+      color: #333;
+      margin-top: 20px;
+      margin-bottom: 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: 600;
+    }
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    .btn {
+      padding: 8px 12px;
+      background-color: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+      margin-right: 5px;
+    }
+    .btn:hover {
+      background-color: #c2185b;
+    }
+    .btn-danger {
+      background-color: #e74c3c;
+    }
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+    .login-form {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .hidden {
+      display: none;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      margin-right: 5px;
+      font-weight: 500;
+      border-radius: 5px 5px 0 0;
+      background-color: #f2f2f2;
+    }
+    .tab.active {
+      background-color: #e91e63;
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .card {
+      background-color: #f9f9f9;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .role-selector {
+      margin-bottom: 20px;
+    }
+    select {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      min-width: 200px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border-left: 4px solid #e91e63;
+    }
+    .stat-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #e91e63;
+    }
+    .percentage {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .chart-container {
+      margin-top: 30px;
+      height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="login-screen" class="login-form">
+      <h1>Acesso ao Painel Admin</h1>
+      <div class="input-group">
+        <label for="admin-password">Senha de Admin</label>
+        <input type="password" id="admin-password" placeholder="Digite a senha de admin">
+      </div>
+      <button id="login-btn" class="btn">Acessar</button>
+    </div>
+
+    <div id="admin-panel" class="hidden">
+      <h1>Painel Admin - Avaliações de Product Manager</h1>
+      
+      <div class="tabs">
+        <div class="tab active" data-tab="todas-avaliacoes">Todas as Avaliações</div>
+        <div class="tab" data-tab="medias-por-funcao">Médias por Função</div>
+      </div>
+      
+      <div id="todas-avaliacoes" class="tab-content active">
+        <button class="btn" onclick="exportToCSV()">Exportar para CSV</button>
+        <table id="assessments-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>WhatsApp</th>
+              <th>Função</th>
+              <th>Data</th>
+              <th>Média Geral</th>
+              <th>Notas por Habilidade</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      
+      <div id="medias-por-funcao" class="tab-content">
+        <div class="role-selector">
+          <label for="role-filter">Selecione a Função:</label>
+          <select id="role-filter" onchange="filterByRole()">
+            <option value="todas">Todas</option>
+            <!-- Opções serão adicionadas dinamicamente -->
+          </select>
+          <button class="btn" onclick="exportAveragesByRole()">Exportar Médias por Função</button>
+        </div>
+        
+        <div class="card">
+          <h2>Resumo</h2>
+          <p>Total de avaliações para <strong id="selected-role-display">todas as funções</strong>: <strong id="total-count">0</strong></p>
+          <p>Média geral: <strong id="overall-average">0</strong></p>
+          <p id="total-assessments-display">Total de avaliações coletadas: <strong id="total-assessments">0</strong></p>
+        </div>
+        
+        <h2>Média por Habilidade</h2>
+        <div id="skills-average" class="stats-grid">
+          <!-- Médias por habilidade serão inseridas aqui -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuPNqRUfnMBeA8PhqsXpbYdW9MRskzyAw",
+      authDomain: "pm-assessment-tool.firebaseapp.com",
+      projectId: "pm-assessment-tool",
+      storageBucket: "pm-assessment-tool.firebasestorage.app",
+      messagingSenderId: "940100178848",
+      appId: "1:940100178848:web:547bdef241a0d587cb8ac5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const ADMIN_PASSWORD = "senhasecreta123";
+    const loginScreen = document.getElementById('login-screen');
+    const adminPanel = document.getElementById('admin-panel');
+    const passwordInput = document.getElementById('admin-password');
+    const loginButton = document.getElementById('login-btn');
+    const assessmentsTable = document.getElementById('assessments-table').getElementsByTagName('tbody')[0];
+    const roleFilter = document.getElementById('role-filter');
+    const tabs = document.querySelectorAll('.tab');
+    
+    let allAssessments = [];
+    let uniqueRoles = new Set();
+    let skillsList = [];
+
+    loginButton.addEventListener('click', authenticate);
+
+    // Configuração das abas
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remover classe ativa de todas as abas
+        tabs.forEach(t => t.classList.remove('active'));
+        
+        // Adicionar classe ativa à aba clicada
+        tab.classList.add('active');
+        
+        // Ocultar todos os conteúdos
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        
+        // Mostrar o conteúdo correspondente
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    function authenticate() {
+      const input = passwordInput.value;
+      if (input === ADMIN_PASSWORD) {
+        loginScreen.classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+        loadAssessments();
+      } else {
+        alert('Senha incorreta.');
+      }
+    }
+
+    function loadAssessments() {
+      db.collection("assessments").orderBy("timestamp", "desc").get().then(snapshot => {
+        allAssessments = [];
+        uniqueRoles = new Set();
+        
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const user = data.user || {};
+          const date = data.timestamp?.toDate().toLocaleString() || '---';
+          const scores = Object.values(data.result || {});
+          const avg = scores.length ? (scores.reduce((a, b) => a + parseFloat(b), 0) / scores.length).toFixed(1) : '-';
+
+          // Atualizar lista de habilidades
+          if (Object.keys(data.result || {}).length > 0 && skillsList.length === 0) {
+            skillsList = Object.keys(data.result);
+          }
+
+          const habilidades = Object.entries(data.result || {}).map(([skill, nota]) => `${skill}: ${nota}`).join('\n');
+
+          // Guardar função para o filtro
+          const role = user.role || 'Não especificado';
+          uniqueRoles.add(role);
+
+          // Salvar avaliação completa
+          allAssessments.push({
+            docId: doc.id,
+            nome: user.name || '-',
+            email: user.email || '-',
+            whatsapp: user.whatsapp || '-',
+            funcao: role,
+            data: date,
+            media_geral: avg,
+            ...data.result
+          });
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${user.name || '-'}</td>
+            <td>${user.email || '-'}</td>
+            <td>${user.whatsapp || '-'}</td>
+            <td>${role}</td>
+            <td>${date}</td>
+            <td>${avg}</td>
+            <td>${habilidades.replace(/\n/g, '<br>')}</td>
+            <td><button class="btn btn-danger" onclick="deleteAssessment('${doc.id}', this)">Excluir</button></td>
+          `;
+          assessmentsTable.appendChild(tr);
+        });
+
+        // Preencher o dropdown de funções
+        populateRoleFilter();
+        
+        // Calcular médias
+        calculateAverages('todas');
+      });
+    }
+
+    function populateRoleFilter() {
+      // Limpar opções anteriores exceto a primeira (Todas)
+      while (roleFilter.options.length > 1) {
+        roleFilter.remove(1);
+      }
+      
+      // Adicionar funções como opções
+      Array.from(uniqueRoles).sort().forEach(role => {
+        const option = document.createElement('option');
+        option.value = role;
+        option.textContent = role;
+        roleFilter.appendChild(option);
+      });
+    }
+
+    function filterByRole() {
+      const selectedRole = roleFilter.value;
+      calculateAverages(selectedRole);
+    }
+
+    function calculateAverages(selectedRole) {
+      // Filtrar avaliações pela função selecionada
+      const filteredAssessments = selectedRole === 'todas' 
+        ? allAssessments 
+        : allAssessments.filter(a => a.funcao === selectedRole);
+      
+      // Atualizar contador
+      document.getElementById('total-count').textContent = filteredAssessments.length;
+      
+      // Atualizar título com a função selecionada
+      document.getElementById('selected-role-display').textContent = 
+        selectedRole === 'todas' ? 'todas as funções' : `"${selectedRole}"`;
+      
+      // Atualizar contagem total de avaliações
+      document.getElementById('total-assessments').textContent = allAssessments.length;
+      
+      // Calcular média geral
+      if (filteredAssessments.length > 0) {
+        const totalAvg = filteredAssessments
+          .map(a => parseFloat(a.media_geral) || 0)
+          .reduce((sum, val) => sum + val, 0) / filteredAssessments.length;
+        
+        document.getElementById('overall-average').textContent = totalAvg.toFixed(1);
+      } else {
+        document.getElementById('overall-average').textContent = '0';
+      }
+      
+      // Calcular média por habilidade
+      const skillsContainer = document.getElementById('skills-average');
+      skillsContainer.innerHTML = '';
+      
+      skillsList.forEach(skill => {
+        const validScores = filteredAssessments
+          .filter(a => a[skill] !== undefined)
+          .map(a => parseFloat(a[skill]));
+        
+        let average = 0;
+        if (validScores.length > 0) {
+          average = validScores.reduce((sum, val) => sum + val, 0) / validScores.length;
+        }
+        
+        const skillCard = document.createElement('div');
+        skillCard.className = 'stat-card';
+        skillCard.innerHTML = `
+          <div class="stat-title">${skill}</div>
+          <div class="stat-value">${average.toFixed(1)}</div>
+          <div>Baseado em ${validScores.length} avaliações</div>
+          <div class="percentage">(${Math.round((validScores.length / allAssessments.length) * 100)}% do total)</div>
+        `;
+        skillsContainer.appendChild(skillCard);
+      });
+    }
+
+    function deleteAssessment(docId, btn) {
+      if (confirm("Tem certeza que deseja excluir esta avaliação?")) {
+        db.collection("assessments").doc(docId).delete().then(() => {
+          // Remover da tabela
+          const row = btn.closest('tr');
+          row.remove();
+          
+          // Remover do array
+          const index = allAssessments.findIndex(a => a.docId === docId);
+          if (index > -1) {
+            allAssessments.splice(index, 1);
+          }
+          
+          // Recalcular médias
+          const selectedRole = roleFilter.value;
+          calculateAverages(selectedRole);
+        });
+      }
+    }
+
+    function exportToCSV() {
+      if (allAssessments.length === 0) return alert('Nenhum dado para exportar.');
+
+      const replacer = (key, value) => value === null ? '' : value;
+      const header = Object.keys(allAssessments[0]).filter(k => k !== 'docId');
+      const csv = [
+        header.join(','),
+        ...allAssessments.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+      ].join('\r\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'avaliacoes_pm.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    function exportAveragesByRole() {
+      if (allAssessments.length === 0) return alert('Nenhum dado para exportar.');
+      
+      // Obter todas as funções únicas
+      const roles = Array.from(uniqueRoles);
+      
+      // Preparar os dados para exportação
+      const exportData = [];
+      
+      // Adicionar linha de cabeçalho
+      const header = ['Função', 'Total de Avaliações', 'Média Geral', ...skillsList];
+      exportData.push(header);
+      
+      // Adicionar linha para "Todas as funções"
+      const allRolesData = calculateRoleAverages('todas');
+      exportData.push([
+        'Todas as funções',
+        allRolesData.totalCount,
+        allRolesData.overallAvg,
+        ...skillsList.map(skill => allRolesData.skillsAvg[skill]?.avg || 0)
+      ]);
+      
+      // Adicionar uma linha para cada função
+      roles.forEach(role => {
+        const roleData = calculateRoleAverages(role);
+        exportData.push([
+          role,
+          roleData.totalCount,
+          roleData.overallAvg,
+          ...skillsList.map(skill => roleData.skillsAvg[skill]?.avg || 0)
+        ]);
+      });
+      
+      // Converter para CSV
+      const csv = exportData.map(row => 
+        row.map(cell => typeof cell === 'string' ? `"${cell}"` : cell).join(',')
+      ).join('\r\n');
+      
+      // Download do arquivo
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'medias_por_funcao.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    function calculateRoleAverages(role) {
+      // Filtrar avaliações pela função
+      const filteredAssessments = role === 'todas' 
+        ? allAssessments 
+        : allAssessments.filter(a => a.funcao === role);
+      
+      // Calcular média geral
+      let overallAvg = 0;
+      if (filteredAssessments.length > 0) {
+        overallAvg = filteredAssessments
+          .map(a => parseFloat(a.media_geral) || 0)
+          .reduce((sum, val) => sum + val, 0) / filteredAssessments.length;
+      }
+      
+      // Calcular médias por habilidade
+      const skillsAvg = {};
+      skillsList.forEach(skill => {
+        const validScores = filteredAssessments
+          .filter(a => a[skill] !== undefined)
+          .map(a => parseFloat(a[skill]));
+        
+        let average = 0;
+        if (validScores.length > 0) {
+          average = validScores.reduce((sum, val) => sum + val, 0) / validScores.length;
+        }
+        
+        skillsAvg[skill] = {
+          avg: average.toFixed(1),
+          count: validScores.length
+        };
+      });
+      
+      return {
+        totalCount: filteredAssessments.length,
+        overallAvg: overallAvg.toFixed(1),
+        skillsAvg
+      };
+    }
+  </script>
+</body>
+</html>
